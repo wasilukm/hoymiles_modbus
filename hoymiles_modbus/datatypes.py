@@ -11,7 +11,7 @@ from plum.dump import Record
 from plum.structure import Structure, member
 
 
-class SerialNumberX(BytesX):
+class _SerialNumberX(BytesX):
     """Datatype for decoding serial number."""
 
     def __unpack__(
@@ -35,33 +35,35 @@ class SerialNumberX(BytesX):
         raise NotImplementedError
 
 
-udec16p1 = DecimalX('udec16p1', nbytes=2, precision=1, byteorder='big', signed=False)
-sdec16p1 = DecimalX('sdec16p1', nbytes=2, precision=1, byteorder='big', signed=True)
-udec16p2 = DecimalX('udec16p2', nbytes=2, precision=2, byteorder='big', signed=False)
+_udec16p1 = DecimalX('udec16p1', nbytes=2, precision=1, byteorder='big', signed=False)
+_sdec16p1 = DecimalX('sdec16p1', nbytes=2, precision=1, byteorder='big', signed=True)
+_udec16p2 = DecimalX('udec16p2', nbytes=2, precision=2, byteorder='big', signed=False)
 
-serial_number_t = SerialNumberX('serial_number_t', nbytes=6)
-reserved = ArrayX('reserved', fmt=uint8)
+_serial_number_t = _SerialNumberX('serial_number_t', nbytes=6)
+_reserved = ArrayX('reserved', fmt=uint8)
 
 
 class MicroinverterData(Structure):
     """Microinverter status data."""
 
+    # __init__
+
     data_type: int = member(fmt=uint8)
-    serial_number: bytes = member(fmt=serial_number_t)
+    serial_number: bytes = member(fmt=_serial_number_t)
     port_number: int = member(fmt=uint8)
-    pv_voltage: Decimal = member(fmt=udec16p1, doc='V')
-    pv_current: Decimal = member(fmt=udec16p1, doc='A')
-    grid_voltage: Decimal = member(fmt=udec16p1, doc='V')
-    grid_frequency: Decimal = member(fmt=udec16p2, doc='Hz')
-    pv_power: Decimal = member(fmt=udec16p1, doc='W')
+    pv_voltage: Decimal = member(fmt=_udec16p1, doc='V')
+    pv_current: Decimal = member(fmt=_udec16p1, doc='A')
+    grid_voltage: Decimal = member(fmt=_udec16p1, doc='V')
+    grid_frequency: Decimal = member(fmt=_udec16p2, doc='Hz')
+    pv_power: Decimal = member(fmt=_udec16p1, doc='W')
     today_production: int = member(fmt=uint16, doc='Wh')
     total_production: int = member(fmt=uint32, doc='Wh')
-    temperature: Decimal = member(fmt=sdec16p1, doc='°C')
+    temperature: Decimal = member(fmt=_sdec16p1, doc='°C')
     operating_status: int = member(fmt=uint16)
     alarm_code: int = member(fmt=uint16)
     alarm_count: int = member(fmt=uint16)
     link_status: int = member(fmt=uint8)
-    reserved: List[int] = member(fmt=reserved)
+    reserved: List[int] = member(fmt=_reserved)
 
 
 @dataclass

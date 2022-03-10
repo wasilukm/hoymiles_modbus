@@ -1,1 +1,2 @@
-::: hoymiles_modbus
+::: hoymiles_modbus.client
+

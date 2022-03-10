@@ -50,6 +50,17 @@ plugins:
   - search:
       lang: en
   - mkdocstrings:
+      handlers:
+        python:
+          import:
+          - https://docs.python.org/3/objects.inv
+          - https://docs.python-requests.org/en/master/objects.inv  # demonstration purpose in the docs
+          - https://mkdocstrings.github.io/autorefs/objects.inv
+          selection:
+            docstring_style: google
+          rendering:
+            merge_init_into_class: yes
+            show_submodules: no
       watch:
         - hoymiles_modbus
 extra:

@@ -4,14 +4,14 @@
 from decimal import Decimal
 from unittest import mock
 
-from hoymiles_modbus import hoymiles_modbus
-from hoymiles_modbus._datatype import MicroinverterData
+from hoymiles_modbus import client
+from hoymiles_modbus.datatypes import MicroinverterData
 
 
 def test_microinverter_data_decode():
     """Test decoding microinverter data."""
     client_mock = mock.Mock()
-    with mock.patch.object(hoymiles_modbus.ModbusTcpClient, '__enter__', return_value=client_mock):
+    with mock.patch.object(client.ModbusTcpClient, '__enter__', return_value=client_mock):
         client_mock.read_holding_registers.return_value.encode.side_effect = [
             b'(\x0c\x1032\x41cU\x01\x01^\x00\x02\tM\x13\x88\x00f\x02\xef\x00\x01$G\x00+\x00\x03\x00\x00\x00\x00\x01'
             b'\x07\x00\x00\x00\x00\x00\x00',
@@ -40,13 +40,13 @@ def test_microinverter_data_decode():
                 reserved=[7, 0, 0, 0, 0, 0, 0],
             )
         ]
-        assert hoymiles_modbus.HoymilesModbusTCP('1.2.3.4').microinverter_data == expected
+        assert client.HoymilesModbusTCP('1.2.3.4').microinverter_data == expected
 
 
 def test_stop_microinverter_data_decode_on_empty_serial():
     """Verify that requesting microinverter register stops on receiving first empty serial number."""
     client_mock = mock.Mock()
-    with mock.patch.object(hoymiles_modbus.ModbusTcpClient, '__enter__', return_value=client_mock):
+    with mock.patch.object(client.ModbusTcpClient, '__enter__', return_value=client_mock):
         client_mock.read_holding_registers.return_value.encode.side_effect = [
             b'(\x0c\x1032\x41cU\x01\x01^\x00\x02\tM\x13\x88\x00f\x02\xef\x00\x01$G\x00+\x00\x03\x00\x00\x00\x00\x01'
             b'\x07\x00\x00\x00\x00\x00\x00',
@@ -57,15 +57,15 @@ def test_stop_microinverter_data_decode_on_empty_serial():
             b'(\x0c\x1032\x41cU\x01\x01^\x00\x02\tM\x13\x88\x00f\x02\xef\x00\x01$G\x00+\x00\x03\x00\x00\x00\x00\x01'
             b'\x07\x00\x00\x00\x00\x00\x00',
         ]
-        assert len(hoymiles_modbus.HoymilesModbusTCP('1.2.3.4').microinverter_data) == 1
+        assert len(client.HoymilesModbusTCP('1.2.3.4').microinverter_data) == 1
 
 
 def test_dtu():
     """Test decoding DTU serial number."""
     client_mock = mock.Mock()
-    with mock.patch.object(hoymiles_modbus.ModbusTcpClient, '__enter__', return_value=client_mock):
+    with mock.patch.object(client.ModbusTcpClient, '__enter__', return_value=client_mock):
         client_mock.read_holding_registers.return_value.encode.side_effect = [b'\x06\x11\xd3a`\x081']
-        assert hoymiles_modbus.HoymilesModbusTCP('1.2.3.4').dtu == b'11d361600831'
+        assert client.HoymilesModbusTCP('1.2.3.4').dtu == b'11d361600831'
 
 
 example_microinverter_data = [
@@ -111,17 +111,17 @@ example_microinverter_data = [
 def test_plant_data():
     """Test calculated values in plant data."""
     client_mock = mock.Mock()
-    with mock.patch.object(hoymiles_modbus.ModbusTcpClient, '__enter__', return_value=client_mock):
+    with mock.patch.object(client.ModbusTcpClient, '__enter__', return_value=client_mock):
         with mock.patch.object(
-            hoymiles_modbus.HoymilesModbusTCP, 'dtu', new_callable=mock.PropertyMock, return_value=b'11d361600831'
+            client.HoymilesModbusTCP, 'dtu', new_callable=mock.PropertyMock, return_value=b'11d361600831'
         ):
             with mock.patch.object(
-                hoymiles_modbus.HoymilesModbusTCP,
+                client.HoymilesModbusTCP,
                 'microinverter_data',
                 new_callable=mock.PropertyMock,
                 return_value=example_microinverter_data,
             ):
-                plant_data = hoymiles_modbus.HoymilesModbusTCP('1.2.3.4').plant_data
+                plant_data = client.HoymilesModbusTCP('1.2.3.4').plant_data
                 assert plant_data.dtu == b'11d361600831'
                 assert plant_data.today_production == 1430
                 assert plant_data.total_production == 129151
@@ -133,17 +133,17 @@ def test_no_alarm():
         data.alarm_code = 0
 
     client_mock = mock.Mock()
-    with mock.patch.object(hoymiles_modbus.ModbusTcpClient, '__enter__', return_value=client_mock):
+    with mock.patch.object(client.ModbusTcpClient, '__enter__', return_value=client_mock):
         with mock.patch.object(
-            hoymiles_modbus.HoymilesModbusTCP, 'dtu', new_callable=mock.PropertyMock, return_value=b'11d361600831'
+            client.HoymilesModbusTCP, 'dtu', new_callable=mock.PropertyMock, return_value=b'11d361600831'
         ):
             with mock.patch.object(
-                hoymiles_modbus.HoymilesModbusTCP,
+                client.HoymilesModbusTCP,
                 'microinverter_data',
                 new_callable=mock.PropertyMock,
                 return_value=example_microinverter_data,
             ):
-                plant_data = hoymiles_modbus.HoymilesModbusTCP('1.2.3.4').plant_data
+                plant_data = client.HoymilesModbusTCP('1.2.3.4').plant_data
                 assert plant_data.alarm_flag is False
 
 
@@ -152,15 +152,15 @@ def test_alarm():
     example_microinverter_data[0].alarm_code = 1
 
     client_mock = mock.Mock()
-    with mock.patch.object(hoymiles_modbus.ModbusTcpClient, '__enter__', return_value=client_mock):
+    with mock.patch.object(client.ModbusTcpClient, '__enter__', return_value=client_mock):
         with mock.patch.object(
-            hoymiles_modbus.HoymilesModbusTCP, 'dtu', new_callable=mock.PropertyMock, return_value=b'11d361600831'
+            client.HoymilesModbusTCP, 'dtu', new_callable=mock.PropertyMock, return_value=b'11d361600831'
         ):
             with mock.patch.object(
-                hoymiles_modbus.HoymilesModbusTCP,
+                client.HoymilesModbusTCP,
                 'microinverter_data',
                 new_callable=mock.PropertyMock,
                 return_value=example_microinverter_data,
             ):
-                plant_data = hoymiles_modbus.HoymilesModbusTCP('1.2.3.4').plant_data
+                plant_data = client.HoymilesModbusTCP('1.2.3.4').plant_data
                 assert plant_data.alarm_flag is True

@@ -1,11 +1,11 @@
-"""Main module."""
+"""Hoymiles Modbus client."""
 
 from typing import List
 
 from pymodbus.client.sync import ModbusTcpClient
 from pymodbus.framer.socket_framer import ModbusSocketFramer
 
-from ._datatype import MicroinverterData, PlantData, serial_number_t
+from .datatypes import MicroinverterData, PlantData, _serial_number_t
 
 
 class _CustomSocketFramer(ModbusSocketFramer):
@@ -23,10 +23,10 @@ class _CustomSocketFramer(ModbusSocketFramer):
 
 
 class HoymilesModbusTCP:
-    """Gather data through Modbus TCP.
+    """Hoymiles Modbus TCP client.
 
-    :param host: DTU address
-    :param port: target DTU modbus TCP port
+    Gather data from photovoltaic installation based on Hoymiles microinverters managed by Hoymiles DTU (like DTU-pro).
+    The client communicates with DTU via Modbus TCP protocol.
 
     """
 
@@ -34,7 +34,13 @@ class HoymilesModbusTCP:
     _NULL_MICROINVERTER = b'000000000000'
 
     def __init__(self, host: str, port: int = 502) -> None:
-        """Gather data through Modbus TCP."""
+        """Initialize the object.
+
+        Arguments:
+            host: DTU address
+            port: target DTU modbus TCP port
+
+        """
         self._host: str = host
         self._port: int = port
         self._dtu_serial_number: bytes = b''
@@ -44,7 +50,11 @@ class HoymilesModbusTCP:
 
     @property
     def microinverter_data(self) -> List[MicroinverterData]:
-        """Microinvertes status data."""
+        """Microinverters status data.
+
+        Each `get` is a new request and data from the installation.
+
+        """
         data: List[MicroinverterData] = []
         with self._get_client() as client:
             for i in range(self._MAX_MICROINVERTER_COUNT):
@@ -62,12 +72,16 @@ class HoymilesModbusTCP:
         if not self._dtu_serial_number:
             with self._get_client() as client:
                 result = client.read_holding_registers(0x2000, 3, unit=1)
-                self._dtu_serial_number = serial_number_t.unpack(result.encode()[1::])
+                self._dtu_serial_number = _serial_number_t.unpack(result.encode()[1::])
         return self._dtu_serial_number
 
     @property
     def plant_data(self):
-        """Plant status data."""
+        """Plant status data.
+
+        Each `get` is a new request and data from the installation.
+
+        """
         microinverter_data = self.microinverter_data
         data = PlantData(self.dtu, microinverter_data=microinverter_data)
         for microinverter in microinverter_data:
