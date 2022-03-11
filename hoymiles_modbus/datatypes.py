@@ -47,7 +47,7 @@ _reserved = ArrayX('reserved', fmt=uint8)
 
 
 class MicroinverterData(Structure):
-    """Microinverter status data."""
+    """Microinverter status data structure."""
 
     data_type: int = member(fmt=uint8)
     serial_number: str = member(fmt=_serial_number_t)
@@ -83,7 +83,7 @@ class MicroinverterData(Structure):
 
 @dataclass
 class PlantData:
-    """Data for the whole plant."""
+    """Data structure for the whole plant."""
 
     dtu: str
     """DTU serial number."""

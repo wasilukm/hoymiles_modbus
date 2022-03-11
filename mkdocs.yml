@@ -61,6 +61,10 @@ plugins:
           rendering:
             merge_init_into_class: yes
             show_submodules: no
+          setup_commands:
+            - from plum.data import DataMeta
+            - from unittest.mock import patch
+            - patch.object(DataMeta, "nbytes").start()  # avoid exception when generating docs
       watch:
         - hoymiles_modbus
 extra:
