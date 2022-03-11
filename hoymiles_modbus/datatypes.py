@@ -50,34 +50,20 @@ class MicroinverterData(Structure):
     """Microinverter status data structure."""
 
     data_type: int = member(fmt=uint8)
-    serial_number: str = member(fmt=_serial_number_t)
-    """Microinverter serial number."""
-    port_number: int = member(fmt=uint8)
-    """Port number"""
-    pv_voltage: Decimal = member(fmt=_udec16p1, doc='V')
-    """PV voltage [V]."""
-    pv_current: Decimal = member(fmt=_udec16p1, doc='A')
-    """PV current [A]."""
-    grid_voltage: Decimal = member(fmt=_udec16p1, doc='V')
-    """Grid voltage [V]."""
-    grid_frequency: Decimal = member(fmt=_udec16p2, doc='Hz')
-    """Grid frequency [Hz]."""
-    pv_power: Decimal = member(fmt=_udec16p1, doc='W')
-    """PV power [W]"""
-    today_production: int = member(fmt=uint16, doc='Wh')
-    """Today production [Wh]."""
-    total_production: int = member(fmt=uint32, doc='Wh')
-    """Total production [Wh]."""
-    temperature: Decimal = member(fmt=_sdec16p1, doc='°C')
-    """Microinverter temperature [C]."""
-    operating_status: int = member(fmt=uint16)
-    """Operating status."""
-    alarm_code: int = member(fmt=uint16)
-    """Alarm code."""
-    alarm_count: int = member(fmt=uint16)
-    """Alarm count."""
-    link_status: int = member(fmt=uint8)
-    """Link status"""
+    serial_number: str = member(fmt=_serial_number_t, doc='Microinverter serial number.')
+    port_number: int = member(fmt=uint8, doc='Port number.')
+    pv_voltage: Decimal = member(fmt=_udec16p1, doc='PV voltage [V].')
+    pv_current: Decimal = member(fmt=_udec16p1, doc='PV current [A].')
+    grid_voltage: Decimal = member(fmt=_udec16p1, doc='Grid voltage [V].')
+    grid_frequency: Decimal = member(fmt=_udec16p2, doc='Grid frequency [Hz].')
+    pv_power: Decimal = member(fmt=_udec16p1, doc='PV power [W].')
+    today_production: int = member(fmt=uint16, doc='Today production [Wh].')
+    total_production: int = member(fmt=uint32, doc='Total production [Wh].')
+    temperature: Decimal = member(fmt=_sdec16p1, doc='Microinverter temperature [°C].')
+    operating_status: int = member(fmt=uint16, doc='Operating status.')
+    alarm_code: int = member(fmt=uint16, doc='Alarm code.')
+    alarm_count: int = member(fmt=uint16, doc='Alarm count.')
+    link_status: int = member(fmt=uint8, doc='Link status.')
     reserved: List[int] = member(fmt=_reserved)
 
 
@@ -88,11 +74,11 @@ class PlantData:
     dtu: str
     """DTU serial number."""
     pv_power: Decimal = Decimal(0)
-    """Current production."""
+    """Current production [W]."""
     today_production: int = 0
-    """Today prodution."""
+    """Today production [Wh]."""
     total_production: int = 0
-    """Total production."""
+    """Total production [Wh]."""
     alarm_flag: bool = False
     """Alarm indicator. True means that at least one microinverter reported an alarm."""
     microinverter_data: List[MicroinverterData] = field(default_factory=list)
