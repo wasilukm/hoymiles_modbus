@@ -1,3 +1,5 @@
+"""Data structures."""
+
 from binascii import hexlify
 from dataclasses import dataclass, field
 from decimal import Decimal
@@ -14,16 +16,17 @@ from plum.structure import Structure, member
 class _SerialNumberX(BytesX):
     """Datatype for decoding serial number."""
 
-    def __unpack__(
+    def __unpack__(  # type: ignore[override]
         self,
         buffer: bytes,
         offset: int,
         dump: Optional[Record] = None,
         nbytes: Optional[int] = None,
-    ) -> Tuple[bytes, int]:
+    ) -> Tuple[str, int]:
         """Unpack."""
         data, offset = super().__unpack__(buffer, offset, dump, nbytes)
-        return hexlify(data), offset
+        serial_bytes = hexlify(data)
+        return serial_bytes.decode('ascii'), offset
 
     def __pack__(
         self,
@@ -46,23 +49,35 @@ _reserved = ArrayX('reserved', fmt=uint8)
 class MicroinverterData(Structure):
     """Microinverter status data."""
 
-    # __init__
-
     data_type: int = member(fmt=uint8)
-    serial_number: bytes = member(fmt=_serial_number_t)
+    serial_number: str = member(fmt=_serial_number_t)
+    """Microinverter serial number."""
     port_number: int = member(fmt=uint8)
+    """Port number"""
     pv_voltage: Decimal = member(fmt=_udec16p1, doc='V')
+    """PV voltage [V]."""
     pv_current: Decimal = member(fmt=_udec16p1, doc='A')
+    """PV current [A]."""
     grid_voltage: Decimal = member(fmt=_udec16p1, doc='V')
+    """Grid voltage [V]."""
     grid_frequency: Decimal = member(fmt=_udec16p2, doc='Hz')
+    """Grid frequency [Hz]."""
     pv_power: Decimal = member(fmt=_udec16p1, doc='W')
+    """PV power [W]"""
     today_production: int = member(fmt=uint16, doc='Wh')
+    """Today production [Wh]."""
     total_production: int = member(fmt=uint32, doc='Wh')
+    """Total production [Wh]."""
     temperature: Decimal = member(fmt=_sdec16p1, doc='°C')
+    """Microinverter temperature [C]."""
     operating_status: int = member(fmt=uint16)
+    """Operating status."""
     alarm_code: int = member(fmt=uint16)
+    """Alarm code."""
     alarm_count: int = member(fmt=uint16)
+    """Alarm count."""
     link_status: int = member(fmt=uint8)
+    """Link status"""
     reserved: List[int] = member(fmt=_reserved)
 
 
@@ -70,7 +85,7 @@ class MicroinverterData(Structure):
 class PlantData:
     """Data for the whole plant."""
 
-    dtu: bytes
+    dtu: str
     """DTU serial number."""
     pv_power: Decimal = Decimal(0)
     """Current production."""

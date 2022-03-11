@@ -23,7 +23,7 @@ def test_microinverter_data_decode():
         expected = [
             MicroinverterData(
                 data_type=12,
-                serial_number=b'103332416355',
+                serial_number='103332416355',
                 port_number=1,
                 pv_voltage=Decimal('35'),
                 pv_current=Decimal('0.2'),
@@ -65,13 +65,13 @@ def test_dtu():
     client_mock = mock.Mock()
     with mock.patch.object(client.ModbusTcpClient, '__enter__', return_value=client_mock):
         client_mock.read_holding_registers.return_value.encode.side_effect = [b'\x06\x11\xd3a`\x081']
-        assert client.HoymilesModbusTCP('1.2.3.4').dtu == b'11d361600831'
+        assert client.HoymilesModbusTCP('1.2.3.4').dtu == '11d361600831'
 
 
 example_microinverter_data = [
     MicroinverterData(  # type: ignore[call-overload]
         data_type=12,
-        serial_number=b'103332416355',
+        serial_number='103332416355',
         port_number=1,
         pv_voltage=Decimal('35'),
         pv_current=Decimal('0.2'),
@@ -89,7 +89,7 @@ example_microinverter_data = [
     ),
     MicroinverterData(  # type: ignore[call-overload]
         data_type=12,
-        serial_number=b'117763504101',
+        serial_number='117763504101',
         port_number=1,
         pv_voltage=Decimal('34.8'),
         pv_current=Decimal('0.2'),
@@ -113,7 +113,7 @@ def test_plant_data():
     client_mock = mock.Mock()
     with mock.patch.object(client.ModbusTcpClient, '__enter__', return_value=client_mock):
         with mock.patch.object(
-            client.HoymilesModbusTCP, 'dtu', new_callable=mock.PropertyMock, return_value=b'11d361600831'
+            client.HoymilesModbusTCP, 'dtu', new_callable=mock.PropertyMock, return_value='11d361600831'
         ):
             with mock.patch.object(
                 client.HoymilesModbusTCP,
@@ -122,7 +122,7 @@ def test_plant_data():
                 return_value=example_microinverter_data,
             ):
                 plant_data = client.HoymilesModbusTCP('1.2.3.4').plant_data
-                assert plant_data.dtu == b'11d361600831'
+                assert plant_data.dtu == '11d361600831'
                 assert plant_data.today_production == 1430
                 assert plant_data.total_production == 129151
 
@@ -135,7 +135,7 @@ def test_no_alarm():
     client_mock = mock.Mock()
     with mock.patch.object(client.ModbusTcpClient, '__enter__', return_value=client_mock):
         with mock.patch.object(
-            client.HoymilesModbusTCP, 'dtu', new_callable=mock.PropertyMock, return_value=b'11d361600831'
+            client.HoymilesModbusTCP, 'dtu', new_callable=mock.PropertyMock, return_value='11d361600831'
         ):
             with mock.patch.object(
                 client.HoymilesModbusTCP,
@@ -154,7 +154,7 @@ def test_alarm():
     client_mock = mock.Mock()
     with mock.patch.object(client.ModbusTcpClient, '__enter__', return_value=client_mock):
         with mock.patch.object(
-            client.HoymilesModbusTCP, 'dtu', new_callable=mock.PropertyMock, return_value=b'11d361600831'
+            client.HoymilesModbusTCP, 'dtu', new_callable=mock.PropertyMock, return_value='11d361600831'
         ):
             with mock.patch.object(
                 client.HoymilesModbusTCP,

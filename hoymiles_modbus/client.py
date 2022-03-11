@@ -31,7 +31,7 @@ class HoymilesModbusTCP:
     """
 
     _MAX_MICROINVERTER_COUNT = 100
-    _NULL_MICROINVERTER = b'000000000000'
+    _NULL_MICROINVERTER = '000000000000'
 
     def __init__(self, host: str, port: int = 502) -> None:
         """Initialize the object.
@@ -43,14 +43,14 @@ class HoymilesModbusTCP:
         """
         self._host: str = host
         self._port: int = port
-        self._dtu_serial_number: bytes = b''
+        self._dtu_serial_number: str = ''
 
     def _get_client(self):
         return ModbusTcpClient(self._host, self._port, framer=_CustomSocketFramer)
 
     @property
     def microinverter_data(self) -> List[MicroinverterData]:
-        """Microinverters status data.
+        """Status data from all microinverters.
 
         Each `get` is a new request and data from the installation.
 
@@ -67,7 +67,7 @@ class HoymilesModbusTCP:
         return data
 
     @property
-    def dtu(self) -> bytes:
+    def dtu(self) -> str:
         """DTU serial number."""
         if not self._dtu_serial_number:
             with self._get_client() as client:
@@ -76,7 +76,7 @@ class HoymilesModbusTCP:
         return self._dtu_serial_number
 
     @property
-    def plant_data(self):
+    def plant_data(self) -> PlantData:
         """Plant status data.
 
         Each `get` is a new request and data from the installation.
