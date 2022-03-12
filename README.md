@@ -30,7 +30,7 @@ DTU should be connected via its `Ethernet` port and should have IP address assig
   * temperature
   * alarms
   * status
-  * gird voltage and frequency
+  * grid voltage and frequency
 
 ## Credits
 
