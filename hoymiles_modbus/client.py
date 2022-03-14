@@ -1,11 +1,17 @@
 """Hoymiles Modbus client."""
 
-from typing import List
+from typing import List, Type, Union
 
 from pymodbus.client.sync import ModbusTcpClient
 from pymodbus.framer.socket_framer import ModbusSocketFramer
 
-from .datatypes import MicroinverterData, PlantData, _serial_number_t
+from .datatypes import (
+    HMSeriesMicroinverterData,
+    MicroinverterType,
+    MISeriesMicroinverterData,
+    PlantData,
+    _serial_number_t,
+)
 
 
 class _CustomSocketFramer(ModbusSocketFramer):
@@ -33,34 +39,44 @@ class HoymilesModbusTCP:
     _MAX_MICROINVERTER_COUNT = 100
     _NULL_MICROINVERTER = '000000000000'
 
-    def __init__(self, host: str, port: int = 502) -> None:
+    def __init__(
+        self, host: str, port: int = 502, microinverter_type: MicroinverterType = MicroinverterType.MI
+    ) -> None:
         """Initialize the object.
 
         Arguments:
             host: DTU address
             port: target DTU modbus TCP port
+            microinverter_type: Microinverter type, applies to all microinverters
 
         """
         self._host: str = host
         self._port: int = port
         self._dtu_serial_number: str = ''
+        self._microinverter_data_struct: Type[Union[MISeriesMicroinverterData, HMSeriesMicroinverterData]]
+        if microinverter_type == MicroinverterType.MI:
+            self._microinverter_data_struct = MISeriesMicroinverterData
+        elif microinverter_type == MicroinverterType.HM:
+            self._microinverter_data_struct = HMSeriesMicroinverterData
+        else:
+            raise ValueError('Unsupported microinverter type:', microinverter_type)
 
     def _get_client(self):
         return ModbusTcpClient(self._host, self._port, framer=_CustomSocketFramer)
 
     @property
-    def microinverter_data(self) -> List[MicroinverterData]:
+    def microinverter_data(self) -> List[Union[MISeriesMicroinverterData, HMSeriesMicroinverterData]]:
         """Status data from all microinverters.
 
         Each `get` is a new request and data from the installation.
 
         """
-        data: List[MicroinverterData] = []
+        data: List[Union[MISeriesMicroinverterData, HMSeriesMicroinverterData]] = []
         with self._get_client() as client:
             for i in range(self._MAX_MICROINVERTER_COUNT):
                 start_address = i * 40 + 0x1000
                 result = client.read_holding_registers(start_address, 20, unit=1)
-                microinverter_data = MicroinverterData.unpack(result.encode()[1:41])
+                microinverter_data = self._microinverter_data_struct.unpack(result.encode()[1:41])
                 if microinverter_data.serial_number == self._NULL_MICROINVERTER:
                     break
                 data.append(microinverter_data)

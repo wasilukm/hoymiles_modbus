@@ -5,7 +5,7 @@ from decimal import Decimal
 from unittest import mock
 
 from hoymiles_modbus import client
-from hoymiles_modbus.datatypes import MicroinverterData
+from hoymiles_modbus.datatypes import MISeriesMicroinverterData
 
 
 def test_microinverter_data_decode():
@@ -21,7 +21,7 @@ def test_microinverter_data_decode():
             b'\x00\x00\x00',
         ]
         expected = [
-            MicroinverterData(
+            MISeriesMicroinverterData(
                 data_type=12,
                 serial_number='103332416355',
                 port_number=1,
@@ -69,7 +69,7 @@ def test_dtu():
 
 
 example_microinverter_data = [
-    MicroinverterData(  # type: ignore[call-overload]
+    MISeriesMicroinverterData(  # type: ignore[call-overload]
         data_type=12,
         serial_number='103332416355',
         port_number=1,
@@ -87,7 +87,7 @@ example_microinverter_data = [
         link_status=1,
         reserved=[7, 0, 0, 0, 0, 0, 0],
     ),
-    MicroinverterData(  # type: ignore[call-overload]
+    MISeriesMicroinverterData(  # type: ignore[call-overload]
         data_type=12,
         serial_number='117763504101',
         port_number=1,
