@@ -1,27 +1,31 @@
 #!/usr/bin/env python
 """Tests for `hoymiles_modbus` package."""
 
+import pytest
 from decimal import Decimal
 from unittest import mock
 
 from hoymiles_modbus import client
-from hoymiles_modbus.datatypes import MicroinverterData
+from hoymiles_modbus.datatypes import MISeriesMicroinverterData, HMSeriesMicroinverterData, MicroinverterType
 
 
-def test_microinverter_data_decode():
+example_raw_modbus_responses = [
+    b'(\x0c\x1032\x41cU\x01\x01^\x00\x02\tM\x13\x88\x00f\x02\xef\x00\x01$G\x00+\x00\x03\x00\x00\x00\x00\x01'
+    b'\x07\x00\x00\x00\x00\x00\x00',
+    b'P\x0c\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00'
+    b'\x00\x00\x00\x00\x00\x00\x00\x00\x07\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00'
+    b'\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00'
+    b'\x00\x00\x00',
+]
+
+
+def test_microinverter_data_decode_mi_series():
     """Test decoding microinverter data."""
     client_mock = mock.Mock()
     with mock.patch.object(client.ModbusTcpClient, '__enter__', return_value=client_mock):
-        client_mock.read_holding_registers.return_value.encode.side_effect = [
-            b'(\x0c\x1032\x41cU\x01\x01^\x00\x02\tM\x13\x88\x00f\x02\xef\x00\x01$G\x00+\x00\x03\x00\x00\x00\x00\x01'
-            b'\x07\x00\x00\x00\x00\x00\x00',
-            b'P\x0c\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00'
-            b'\x00\x00\x00\x00\x00\x00\x00\x00\x07\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00'
-            b'\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00'
-            b'\x00\x00\x00',
-        ]
+        client_mock.read_holding_registers.return_value.encode.side_effect = example_raw_modbus_responses
         expected = [
-            MicroinverterData(
+            MISeriesMicroinverterData(
                 data_type=12,
                 serial_number='103332416355',
                 port_number=1,
@@ -40,7 +44,45 @@ def test_microinverter_data_decode():
                 reserved=[7, 0, 0, 0, 0, 0, 0],
             )
         ]
-        assert client.HoymilesModbusTCP('1.2.3.4').microinverter_data == expected
+        microinverter_data = client.HoymilesModbusTCP('1.2.3.4').microinverter_data
+        assert microinverter_data == expected
+
+
+def test_microinverter_data_decode_hm_series():
+    """Test decoding microinverter data."""
+    client_mock = mock.Mock()
+    with mock.patch.object(client.ModbusTcpClient, '__enter__', return_value=client_mock):
+        client_mock.read_holding_registers.return_value.encode.side_effect = example_raw_modbus_responses
+        expected = [
+            HMSeriesMicroinverterData(
+                data_type=12,
+                serial_number='103332416355',
+                port_number=1,
+                pv_voltage=Decimal('35'),
+                pv_current=Decimal('0.02'),
+                grid_voltage=Decimal('238.1'),
+                grid_frequency=Decimal('50'),
+                pv_power=Decimal('10.2'),
+                today_production=751,
+                total_production=74823,
+                temperature=Decimal('4.3'),
+                operating_status=3,
+                alarm_code=0,
+                alarm_count=0,
+                link_status=1,
+                reserved=[7, 0, 0, 0, 0, 0, 0],
+            )
+        ]
+        microinverter_data = client.HoymilesModbusTCP(
+            '1.2.3.4', microinverter_type=MicroinverterType.HM
+        ).microinverter_data
+        assert microinverter_data == expected
+
+
+def test_unknown_microinverter_type():
+    """Test exception for unknown microinverter type."""
+    with pytest.raises(ValueError):
+        client.HoymilesModbusTCP('1.2.3.4', microinverter_type='foo')
 
 
 def test_stop_microinverter_data_decode_on_empty_serial():
@@ -69,7 +111,7 @@ def test_dtu():
 
 
 example_microinverter_data = [
-    MicroinverterData(  # type: ignore[call-overload]
+    MISeriesMicroinverterData(  # type: ignore[call-overload]
         data_type=12,
         serial_number='103332416355',
         port_number=1,
@@ -87,7 +129,7 @@ example_microinverter_data = [
         link_status=1,
         reserved=[7, 0, 0, 0, 0, 0, 0],
     ),
-    MicroinverterData(  # type: ignore[call-overload]
+    MISeriesMicroinverterData(  # type: ignore[call-overload]
         data_type=12,
         serial_number='117763504101',
         port_number=1,

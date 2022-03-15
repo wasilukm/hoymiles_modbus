@@ -3,6 +3,7 @@
 from binascii import hexlify
 from dataclasses import dataclass, field
 from decimal import Decimal
+from enum import Enum, auto
 from typing import List, Optional, Tuple, Union
 
 from plum.array import ArrayX
@@ -46,8 +47,17 @@ _serial_number_t = _SerialNumberX('serial_number_t', nbytes=6)
 _reserved = ArrayX('reserved', fmt=uint8)
 
 
-class MicroinverterData(Structure):
-    """Microinverter status data structure."""
+class MicroinverterType(Enum):
+    """Microinverter type."""
+
+    MI = auto()
+    """MI series."""
+    HM = auto()
+    """HM series."""
+
+
+class MISeriesMicroinverterData(Structure):
+    """MI series microinverter status data structure."""
 
     data_type: int = member(fmt=uint8)
     serial_number: str = member(fmt=_serial_number_t, doc='Microinverter serial number.')
@@ -67,6 +77,12 @@ class MicroinverterData(Structure):
     reserved: List[int] = member(fmt=_reserved)
 
 
+class HMSeriesMicroinverterData(MISeriesMicroinverterData):
+    """HM series microinverter status data structure."""
+
+    pv_current: Decimal = member(fmt=_udec16p2, doc='PV current [A].')
+
+
 @dataclass
 class PlantData:
     """Data structure for the whole plant."""
@@ -81,5 +97,5 @@ class PlantData:
     """Total production [Wh]."""
     alarm_flag: bool = False
     """Alarm indicator. True means that at least one microinverter reported an alarm."""
-    microinverter_data: List[MicroinverterData] = field(default_factory=list)
+    microinverter_data: List[Union[MISeriesMicroinverterData, HMSeriesMicroinverterData]] = field(default_factory=list)
     """Data for each microinverter."""
