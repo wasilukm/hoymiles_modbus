@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 """Tests for `hoymiles_modbus` package."""
 
+import pytest
 from decimal import Decimal
 from unittest import mock
 
@@ -76,6 +77,12 @@ def test_microinverter_data_decode_hm_series():
             '1.2.3.4', microinverter_type=MicroinverterType.HM
         ).microinverter_data
         assert microinverter_data == expected
+
+
+def test_unknown_microinverter_type():
+    """Test exception for unknown microinverter type."""
+    with pytest.raises(ValueError):
+        client.HoymilesModbusTCP('1.2.3.4', microinverter_type='foo')
 
 
 def test_stop_microinverter_data_decode_on_empty_serial():
