@@ -61,8 +61,15 @@ class HoymilesModbusTCP:
         else:
             raise ValueError('Unsupported microinverter type:', microinverter_type)
 
-    def _get_client(self):
+    def _get_client(self) -> ModbusTcpClient:
         return ModbusTcpClient(self._host, self._port, framer=_CustomSocketFramer)
+
+    @staticmethod
+    def _read_registers(client: ModbusTcpClient, start_address, count):
+        result = client.read_holding_registers(start_address, count, unit=1)
+        if result.isError():
+            raise result
+        return result
 
     @property
     def microinverter_data(self) -> List[Union[MISeriesMicroinverterData, HMSeriesMicroinverterData]]:
@@ -75,7 +82,7 @@ class HoymilesModbusTCP:
         with self._get_client() as client:
             for i in range(self._MAX_MICROINVERTER_COUNT):
                 start_address = i * 40 + 0x1000
-                result = client.read_holding_registers(start_address, 20, unit=1)
+                result = self._read_registers(client, start_address, 20)
                 microinverter_data = self._microinverter_data_struct.unpack(result.encode()[1:41])
                 if microinverter_data.serial_number == self._NULL_MICROINVERTER:
                     break
@@ -87,7 +94,7 @@ class HoymilesModbusTCP:
         """DTU serial number."""
         if not self._dtu_serial_number:
             with self._get_client() as client:
-                result = client.read_holding_registers(0x2000, 3, unit=1)
+                result = self._read_registers(client, 0x2000, 3)
                 self._dtu_serial_number = _serial_number_t.unpack(result.encode()[1::])
         return self._dtu_serial_number
 

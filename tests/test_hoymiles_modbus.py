@@ -4,6 +4,7 @@
 import pytest
 from decimal import Decimal
 from unittest import mock
+from pymodbus.exceptions import ModbusIOException
 
 from hoymiles_modbus import client
 from hoymiles_modbus.datatypes import MISeriesMicroinverterData, HMSeriesMicroinverterData, MicroinverterType
@@ -24,6 +25,7 @@ def test_microinverter_data_decode_mi_series():
     client_mock = mock.Mock()
     with mock.patch.object(client.ModbusTcpClient, '__enter__', return_value=client_mock):
         client_mock.read_holding_registers.return_value.encode.side_effect = example_raw_modbus_responses
+        client_mock.read_holding_registers.return_value.isError.return_value = False
         expected = [
             MISeriesMicroinverterData(
                 data_type=12,
@@ -53,6 +55,7 @@ def test_microinverter_data_decode_hm_series():
     client_mock = mock.Mock()
     with mock.patch.object(client.ModbusTcpClient, '__enter__', return_value=client_mock):
         client_mock.read_holding_registers.return_value.encode.side_effect = example_raw_modbus_responses
+        client_mock.read_holding_registers.return_value.isError.return_value = False
         expected = [
             HMSeriesMicroinverterData(
                 data_type=12,
@@ -89,16 +92,10 @@ def test_stop_microinverter_data_decode_on_empty_serial():
     """Verify that requesting microinverter register stops on receiving first empty serial number."""
     client_mock = mock.Mock()
     with mock.patch.object(client.ModbusTcpClient, '__enter__', return_value=client_mock):
-        client_mock.read_holding_registers.return_value.encode.side_effect = [
+        client_mock.read_holding_registers.return_value.encode.side_effect = example_raw_modbus_responses + [
             b'(\x0c\x1032\x41cU\x01\x01^\x00\x02\tM\x13\x88\x00f\x02\xef\x00\x01$G\x00+\x00\x03\x00\x00\x00\x00\x01'
-            b'\x07\x00\x00\x00\x00\x00\x00',
-            b'P\x0c\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00'
-            b'\x00\x00\x00\x00\x00\x00\x00\x00\x07\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00'
-            b'\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00'
-            b'\x00\x00\x00',
-            b'(\x0c\x1032\x41cU\x01\x01^\x00\x02\tM\x13\x88\x00f\x02\xef\x00\x01$G\x00+\x00\x03\x00\x00\x00\x00\x01'
-            b'\x07\x00\x00\x00\x00\x00\x00',
-        ]
+            b'\x07\x00\x00\x00\x00\x00\x00']
+        client_mock.read_holding_registers.return_value.isError.return_value = False
         assert len(client.HoymilesModbusTCP('1.2.3.4').microinverter_data) == 1
 
 
@@ -107,6 +104,7 @@ def test_dtu():
     client_mock = mock.Mock()
     with mock.patch.object(client.ModbusTcpClient, '__enter__', return_value=client_mock):
         client_mock.read_holding_registers.return_value.encode.side_effect = [b'\x06\x11\xd3a`\x081']
+        client_mock.read_holding_registers.return_value.isError.return_value = False
         assert client.HoymilesModbusTCP('1.2.3.4').dtu == '11d361600831'
 
 
@@ -206,3 +204,12 @@ def test_alarm():
             ):
                 plant_data = client.HoymilesModbusTCP('1.2.3.4').plant_data
                 assert plant_data.alarm_flag is True
+
+
+def test_modbus_response_exception():
+    """Verify that exception is raised when error in modbus response."""
+    client_mock = mock.Mock()
+    with mock.patch.object(client.ModbusTcpClient, '__enter__', return_value=client_mock):
+        client_mock.read_holding_registers.return_value = ModbusIOException()
+        with pytest.raises(ModbusIOException):
+            client.HoymilesModbusTCP('1.2.3.4').dtu
