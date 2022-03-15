@@ -77,25 +77,10 @@ class MISeriesMicroinverterData(Structure):
     reserved: List[int] = member(fmt=_reserved)
 
 
-class HMSeriesMicroinverterData(Structure):
+class HMSeriesMicroinverterData(MISeriesMicroinverterData):
     """HM series microinverter status data structure."""
 
-    data_type: int = member(fmt=uint8)
-    serial_number: str = member(fmt=_serial_number_t, doc='Microinverter serial number.')
-    port_number: int = member(fmt=uint8, doc='Port number.')
-    pv_voltage: Decimal = member(fmt=_udec16p1, doc='PV voltage [V].')
     pv_current: Decimal = member(fmt=_udec16p2, doc='PV current [A].')
-    grid_voltage: Decimal = member(fmt=_udec16p1, doc='Grid voltage [V].')
-    grid_frequency: Decimal = member(fmt=_udec16p2, doc='Grid frequency [Hz].')
-    pv_power: Decimal = member(fmt=_udec16p1, doc='PV power [W].')
-    today_production: int = member(fmt=uint16, doc='Today production [Wh].')
-    total_production: int = member(fmt=uint32, doc='Total production [Wh].')
-    temperature: Decimal = member(fmt=_sdec16p1, doc='Microinverter temperature [°C].')
-    operating_status: int = member(fmt=uint16, doc='Operating status.')
-    alarm_code: int = member(fmt=uint16, doc='Alarm code.')
-    alarm_count: int = member(fmt=uint16, doc='Alarm count.')
-    link_status: int = member(fmt=uint8, doc='Link status.')
-    reserved: List[int] = member(fmt=_reserved)
 
 
 @dataclass
