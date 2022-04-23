@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.2.1] (2022-04-23)
+
+* Again fix handling modbus exceptions - modbus error was
+  causing `IndexError: list assignment index out of range` exception
+
 ## [0.2.0] (2022-03-15)
 
 * improve modbus exception handling - now when there is an error in
