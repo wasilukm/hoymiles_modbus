@@ -18,9 +18,10 @@ class _CustomSocketFramer(ModbusSocketFramer):
     """Custom framer for fixing data length in received modbus packets."""
 
     @staticmethod
-    def _data_length_fixer(packet):
+    def _data_length_fixer(packet):  # pragma: no cover
         fixed_packet = list(packet)
-        fixed_packet[8] = len(fixed_packet[9:])
+        if len(packet) > 9:
+            fixed_packet[8] = len(fixed_packet[9:])
         return bytes(fixed_packet)
 
     def processIncomingPacket(self, data, callback, unit, **kwargs):

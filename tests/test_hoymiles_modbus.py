@@ -94,7 +94,8 @@ def test_stop_microinverter_data_decode_on_empty_serial():
     with mock.patch.object(client.ModbusTcpClient, '__enter__', return_value=client_mock):
         client_mock.read_holding_registers.return_value.encode.side_effect = example_raw_modbus_responses + [
             b'(\x0c\x1032\x41cU\x01\x01^\x00\x02\tM\x13\x88\x00f\x02\xef\x00\x01$G\x00+\x00\x03\x00\x00\x00\x00\x01'
-            b'\x07\x00\x00\x00\x00\x00\x00']
+            b'\x07\x00\x00\x00\x00\x00\x00'
+        ]
         client_mock.read_holding_registers.return_value.isError.return_value = False
         assert len(client.HoymilesModbusTCP('1.2.3.4').microinverter_data) == 1
 
