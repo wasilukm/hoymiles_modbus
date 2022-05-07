@@ -41,7 +41,7 @@ class HoymilesModbusTCP:
     _NULL_MICROINVERTER = '000000000000'
 
     def __init__(
-        self, host: str, port: int = 502, microinverter_type: MicroinverterType = MicroinverterType.MI
+        self, host: str, port: int = 502, microinverter_type: MicroinverterType = MicroinverterType.MI, unit_id: int = 1
     ) -> None:
         """Initialize the object.
 
@@ -49,6 +49,7 @@ class HoymilesModbusTCP:
             host: DTU address
             port: target DTU modbus TCP port
             microinverter_type: Microinverter type, applies to all microinverters
+            unit_id: Modbus unit ID
 
         """
         self._host: str = host
@@ -61,13 +62,14 @@ class HoymilesModbusTCP:
             self._microinverter_data_struct = HMSeriesMicroinverterData
         else:
             raise ValueError('Unsupported microinverter type:', microinverter_type)
+        self._unit_id = unit_id
 
     def _get_client(self) -> ModbusTcpClient:
         return ModbusTcpClient(self._host, self._port, framer=_CustomSocketFramer)
 
     @staticmethod
-    def _read_registers(client: ModbusTcpClient, start_address, count):
-        result = client.read_holding_registers(start_address, count, unit=1)
+    def _read_registers(client: ModbusTcpClient, start_address, count, unit_id):
+        result = client.read_holding_registers(start_address, count, unit=unit_id)
         if result.isError():
             raise result
         return result
@@ -83,7 +85,7 @@ class HoymilesModbusTCP:
         with self._get_client() as client:
             for i in range(self._MAX_MICROINVERTER_COUNT):
                 start_address = i * 40 + 0x1000
-                result = self._read_registers(client, start_address, 20)
+                result = self._read_registers(client, start_address, 20, self._unit_id)
                 microinverter_data = self._microinverter_data_struct.unpack(result.encode()[1:41])
                 if microinverter_data.serial_number == self._NULL_MICROINVERTER:
                     break
@@ -95,7 +97,7 @@ class HoymilesModbusTCP:
         """DTU serial number."""
         if not self._dtu_serial_number:
             with self._get_client() as client:
-                result = self._read_registers(client, 0x2000, 3)
+                result = self._read_registers(client, 0x2000, 3, self._unit_id)
                 self._dtu_serial_number = _serial_number_t.unpack(result.encode()[1::])
         return self._dtu_serial_number
 

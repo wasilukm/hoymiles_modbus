@@ -39,12 +39,12 @@ class _SerialNumberX(BytesX):
         raise NotImplementedError
 
 
-_udec16p1 = DecimalX('udec16p1', nbytes=2, precision=1, byteorder='big', signed=False)
-_sdec16p1 = DecimalX('sdec16p1', nbytes=2, precision=1, byteorder='big', signed=True)
-_udec16p2 = DecimalX('udec16p2', nbytes=2, precision=2, byteorder='big', signed=False)
+_udec16p1 = DecimalX(name='udec16p1', nbytes=2, precision=1, byteorder='big', signed=False)
+_sdec16p1 = DecimalX(name='sdec16p1', nbytes=2, precision=1, byteorder='big', signed=True)
+_udec16p2 = DecimalX(name='udec16p2', nbytes=2, precision=2, byteorder='big', signed=False)
 
-_serial_number_t = _SerialNumberX('serial_number_t', nbytes=6)
-_reserved = ArrayX('reserved', fmt=uint8)
+_serial_number_t = _SerialNumberX(name='serial_number_t', nbytes=6)
+_reserved = ArrayX(name='reserved', fmt=uint8)
 
 
 class MicroinverterType(Enum):
