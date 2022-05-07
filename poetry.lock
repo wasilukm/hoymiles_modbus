@@ -601,7 +601,7 @@ testing = ["pytest", "pytest-benchmark"]
 
 [[package]]
 name = "plum-py"
-version = "0.7.5"
+version = "0.8.0"
 description = "Pack/Unpack Memory."
 category = "main"
 optional = false
@@ -1071,7 +1071,7 @@ test = ["pytest", "black", "isort", "mypy", "flake8", "flake8-docstrings", "pyte
 [metadata]
 lock-version = "1.1"
 python-versions = ">=3.6.2,<4.0"
-content-hash = "1637df43421713bd62cedb8db12dc489d83b400ee0a70f5cf875d656e79f041c"
+content-hash = "dacd566c762e849c877bd040e35cd2b3979932439ed4e1b5973e800d928e76ee"
 
 [metadata.files]
 astunparse = [
@@ -1495,8 +1495,8 @@ pluggy = [
     {file = "pluggy-1.0.0.tar.gz", hash = "sha256:4224373bacce55f955a878bf9cfa763c1e360858e330072059e10bad68531159"},
 ]
 plum-py = [
-    {file = "plum-py-0.7.5.tar.gz", hash = "sha256:4b244255982c002d7996cfa7f9a203cdcf5c87c7f4d57397cb647ec8f2cfd51f"},
-    {file = "plum_py-0.7.5-py3-none-any.whl", hash = "sha256:19f928518be99da2daaebdf59fccb8ad81dada55eb92fba68198b217ed8ccb49"},
+    {file = "plum-py-0.8.0.tar.gz", hash = "sha256:dc1e38bb7f9b1c09032aa00daec416ec6e42b5ffc3338e97d05200b4beed91da"},
+    {file = "plum_py-0.8.0-py3-none-any.whl", hash = "sha256:14356ea746048e59d4ac6b8bd32f1717ef03e49e1a4755ca7abb2aa799767453"},
 ]
 pre-commit = [
     {file = "pre_commit-2.17.0-py2.py3-none-any.whl", hash = "sha256:725fa7459782d7bec5ead072810e47351de01709be838c2ce1726b9591dad616"},
