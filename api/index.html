@@ -1022,7 +1022,7 @@ The client communicates with DTU via Modbus TCP protocol.</p>
     <span class="n">_NULL_MICROINVERTER</span> <span class="o">=</span> <span class="s1">&#39;000000000000&#39;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span> <span class="n">host</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">port</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">502</span><span class="p">,</span> <span class="n">microinverter_type</span><span class="p">:</span> <span class="n">MicroinverterType</span> <span class="o">=</span> <span class="n">MicroinverterType</span><span class="o">.</span><span class="n">MI</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">host</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">port</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">502</span><span class="p">,</span> <span class="n">microinverter_type</span><span class="p">:</span> <span class="n">MicroinverterType</span> <span class="o">=</span> <span class="n">MicroinverterType</span><span class="o">.</span><span class="n">MI</span><span class="p">,</span> <span class="n">unit_id</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;Initialize the object.</span>
 
@@ -1030,6 +1030,7 @@ The client communicates with DTU via Modbus TCP protocol.</p>
 <span class="sd">            host: DTU address</span>
 <span class="sd">            port: target DTU modbus TCP port</span>
 <span class="sd">            microinverter_type: Microinverter type, applies to all microinverters</span>
+<span class="sd">            unit_id: Modbus unit ID</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_host</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">host</span>
@@ -1042,13 +1043,14 @@ The client communicates with DTU via Modbus TCP protocol.</p>
             <span class="bp">self</span><span class="o">.</span><span class="n">_microinverter_data_struct</span> <span class="o">=</span> <span class="n">HMSeriesMicroinverterData</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Unsupported microinverter type:&#39;</span><span class="p">,</span> <span class="n">microinverter_type</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_unit_id</span> <span class="o">=</span> <span class="n">unit_id</span>
 
     <span class="k">def</span> <span class="nf">_get_client</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ModbusTcpClient</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">ModbusTcpClient</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_host</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_port</span><span class="p">,</span> <span class="n">framer</span><span class="o">=</span><span class="n">_CustomSocketFramer</span><span class="p">)</span>
 
     <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">_read_registers</span><span class="p">(</span><span class="n">client</span><span class="p">:</span> <span class="n">ModbusTcpClient</span><span class="p">,</span> <span class="n">start_address</span><span class="p">,</span> <span class="n">count</span><span class="p">):</span>
-        <span class="n">result</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">read_holding_registers</span><span class="p">(</span><span class="n">start_address</span><span class="p">,</span> <span class="n">count</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">_read_registers</span><span class="p">(</span><span class="n">client</span><span class="p">:</span> <span class="n">ModbusTcpClient</span><span class="p">,</span> <span class="n">start_address</span><span class="p">,</span> <span class="n">count</span><span class="p">,</span> <span class="n">unit_id</span><span class="p">):</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">read_holding_registers</span><span class="p">(</span><span class="n">start_address</span><span class="p">,</span> <span class="n">count</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="n">unit_id</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">result</span><span class="o">.</span><span class="n">isError</span><span class="p">():</span>
             <span class="k">raise</span> <span class="n">result</span>
         <span class="k">return</span> <span class="n">result</span>
@@ -1064,7 +1066,7 @@ The client communicates with DTU via Modbus TCP protocol.</p>
         <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_client</span><span class="p">()</span> <span class="k">as</span> <span class="n">client</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_MAX_MICROINVERTER_COUNT</span><span class="p">):</span>
                 <span class="n">start_address</span> <span class="o">=</span> <span class="n">i</span> <span class="o">*</span> <span class="mi">40</span> <span class="o">+</span> <span class="mh">0x1000</span>
-                <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_read_registers</span><span class="p">(</span><span class="n">client</span><span class="p">,</span> <span class="n">start_address</span><span class="p">,</span> <span class="mi">20</span><span class="p">)</span>
+                <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_read_registers</span><span class="p">(</span><span class="n">client</span><span class="p">,</span> <span class="n">start_address</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_unit_id</span><span class="p">)</span>
                 <span class="n">microinverter_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_microinverter_data_struct</span><span class="o">.</span><span class="n">unpack</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">encode</span><span class="p">()[</span><span class="mi">1</span><span class="p">:</span><span class="mi">41</span><span class="p">])</span>
                 <span class="k">if</span> <span class="n">microinverter_data</span><span class="o">.</span><span class="n">serial_number</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">_NULL_MICROINVERTER</span><span class="p">:</span>
                     <span class="k">break</span>
@@ -1076,7 +1078,7 @@ The client communicates with DTU via Modbus TCP protocol.</p>
         <span class="sd">&quot;&quot;&quot;DTU serial number.&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dtu_serial_number</span><span class="p">:</span>
             <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_client</span><span class="p">()</span> <span class="k">as</span> <span class="n">client</span><span class="p">:</span>
-                <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_read_registers</span><span class="p">(</span><span class="n">client</span><span class="p">,</span> <span class="mh">0x2000</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+                <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_read_registers</span><span class="p">(</span><span class="n">client</span><span class="p">,</span> <span class="mh">0x2000</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_unit_id</span><span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_dtu_serial_number</span> <span class="o">=</span> <span class="n">_serial_number_t</span><span class="o">.</span><span class="n">unpack</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">encode</span><span class="p">()[</span><span class="mi">1</span><span class="p">::])</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dtu_serial_number</span>
 
@@ -1188,7 +1190,7 @@ The client communicates with DTU via Modbus TCP protocol.</p>
 
 
 <h4 id="hoymiles_modbus.client.HoymilesModbusTCP.__init__" class="doc doc-heading">
-<code class="highlight language-python"><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">host</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="mi">502</span><span class="p">,</span> <span class="n">microinverter_type</span><span class="o">=&lt;</span><span class="n">MicroinverterType</span><span class="o">.</span><span class="n">MI</span><span class="p">:</span> <span class="mi">1</span><span class="o">&gt;</span><span class="p">)</span></code>
+<code class="highlight language-python"><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">host</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="mi">502</span><span class="p">,</span> <span class="n">microinverter_type</span><span class="o">=&lt;</span><span class="n">MicroinverterType</span><span class="o">.</span><span class="n">MI</span><span class="p">:</span> <span class="mi">1</span><span class="o">&gt;</span><span class="p">,</span> <span class="n">unit_id</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span></code>
 
   <span class="doc doc-properties">
       <small class="doc doc-property doc-property-special"><code>special</code></small>
@@ -1229,12 +1231,18 @@ The client communicates with DTU via Modbus TCP protocol.</p>
         <td><p>Microinverter type, applies to all microinverters</p></td>
         <td><code>&lt;MicroinverterType.MI: 1&gt;</code></td>
       </tr>
+      <tr>
+        <td><code>unit_id</code></td>
+        <td><code>int</code></td>
+        <td><p>Modbus unit ID</p></td>
+        <td><code>1</code></td>
+      </tr>
   </tbody>
 </table>
         <details class="quote">
           <summary>Source code in <code>hoymiles_modbus/client.py</code></summary>
           <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
-    <span class="bp">self</span><span class="p">,</span> <span class="n">host</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">port</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">502</span><span class="p">,</span> <span class="n">microinverter_type</span><span class="p">:</span> <span class="n">MicroinverterType</span> <span class="o">=</span> <span class="n">MicroinverterType</span><span class="o">.</span><span class="n">MI</span>
+    <span class="bp">self</span><span class="p">,</span> <span class="n">host</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">port</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">502</span><span class="p">,</span> <span class="n">microinverter_type</span><span class="p">:</span> <span class="n">MicroinverterType</span> <span class="o">=</span> <span class="n">MicroinverterType</span><span class="o">.</span><span class="n">MI</span><span class="p">,</span> <span class="n">unit_id</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;Initialize the object.</span>
 
@@ -1242,6 +1250,7 @@ The client communicates with DTU via Modbus TCP protocol.</p>
 <span class="sd">        host: DTU address</span>
 <span class="sd">        port: target DTU modbus TCP port</span>
 <span class="sd">        microinverter_type: Microinverter type, applies to all microinverters</span>
+<span class="sd">        unit_id: Modbus unit ID</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">_host</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">host</span>
@@ -1254,6 +1263,7 @@ The client communicates with DTU via Modbus TCP protocol.</p>
         <span class="bp">self</span><span class="o">.</span><span class="n">_microinverter_data_struct</span> <span class="o">=</span> <span class="n">HMSeriesMicroinverterData</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Unsupported microinverter type:&#39;</span><span class="p">,</span> <span class="n">microinverter_type</span><span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">_unit_id</span> <span class="o">=</span> <span class="n">unit_id</span>
 </code></pre></div>
         </details>
     </div>
@@ -1350,6 +1360,7 @@ HMSeriesMicroinverterData            (<a title="hoymiles_modbus.datatypes.MISeri
 
 
 
+
   <div class="doc doc-object doc-attribute">
 
 
@@ -1370,6 +1381,8 @@ HMSeriesMicroinverterData            (<a title="hoymiles_modbus.datatypes.MISeri
     </div>
 
   </div>
+
+
 
 
 
@@ -1434,6 +1447,7 @@ MISeriesMicroinverterData            (<span title="plum.structure.Structure">Str
 
 
   <div class="doc doc-children">
+
 
 
 
@@ -1767,6 +1781,8 @@ MISeriesMicroinverterData            (<span title="plum.structure.Structure">Str
     </div>
 
   </div>
+
+
 
 
 
