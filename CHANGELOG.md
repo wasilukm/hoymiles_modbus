@@ -1,6 +1,6 @@
 # Changelog
 
-## [0.3.0] (2022-05-07)
+## [0.4.0] (2022-05-07)
 
 * Add support for custom Modbus Unit ID
 * Bump plum-py version
