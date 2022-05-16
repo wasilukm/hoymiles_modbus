@@ -32,6 +32,14 @@ DTU should be connected via its `Ethernet` port and should have IP address assig
   * status
   * grid voltage and frequency
 
+## Applications
+This library is for creating higher-level applications.
+If you are looking for such, check the following:
+
+* Home Assistant integrations
+  * integration via MQTT - https://github.com/wasilukm/hoymiles-mqtt
+  * Add-on - https://github.com/ArekKubacki/Hoymiles-Plant-DTU-Pro
+
 ## Credits
 
 This package was created with [Cookiecutter](https://github.com/audreyr/cookiecutter) and the [waynerv/cookiecutter-pypackage](https://github.com/waynerv/cookiecutter-pypackage) project template.
