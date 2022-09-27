@@ -1,6 +1,6 @@
 """Hoymiles Modbus client."""
 
-from dataclasses import dataclass
+from dataclasses import dataclass, asdict
 from typing import List, Type, Union
 
 from pymodbus.client.sync import ModbusTcpClient
@@ -86,7 +86,7 @@ class HoymilesModbusTCP:
         return self._comm_params
 
     def _get_client(self) -> ModbusTcpClient:
-        return ModbusTcpClient(self._host, self._port, framer=_CustomSocketFramer, **self.comm_params.asdict())
+        return ModbusTcpClient(self._host, self._port, framer=_CustomSocketFramer, **asdict(self.comm_params))
 
     @staticmethod
     def _read_registers(client: ModbusTcpClient, start_address, count, unit_id):
