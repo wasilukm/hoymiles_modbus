@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.5.0] (2022-10-03)
+
+* Add support for low level pymodbus communication parameters. A user can configure additional
+  communication parameters via `HoymilesModbusTCP().comm_params`
+
 ## [0.4.0] (2022-05-07)
 
 * Add support for custom Modbus Unit ID
