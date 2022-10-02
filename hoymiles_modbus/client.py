@@ -1,5 +1,6 @@
 """Hoymiles Modbus client."""
 
+from dataclasses import asdict, dataclass
 from typing import List, Type, Union
 
 from pymodbus.client.sync import ModbusTcpClient
@@ -12,6 +13,24 @@ from .datatypes import (
     PlantData,
     _serial_number_t,
 )
+
+
+@dataclass
+class CommunicationParams:
+    """Low level pymodbus communication parameters."""
+
+    timeout: int = 3
+    """Request timeout."""
+    retries: int = 3
+    """Max number of retries per request."""
+    retry_on_empty: bool = False
+    """Retry if received an empty response."""
+    close_comm_on_error: bool = False
+    """Close connection on error"""
+    strict: bool = True
+    """Strict timing, 1.5 character between requests."""
+    reconnect_delay: int = 60000 * 5
+    """Delay in milliseconds before reconnecting."""
 
 
 class _CustomSocketFramer(ModbusSocketFramer):
@@ -63,9 +82,15 @@ class HoymilesModbusTCP:
         else:
             raise ValueError('Unsupported microinverter type:', microinverter_type)
         self._unit_id = unit_id
+        self._comm_params: CommunicationParams = CommunicationParams()
+
+    @property
+    def comm_params(self) -> CommunicationParams:
+        """Low level communication parameters."""
+        return self._comm_params
 
     def _get_client(self) -> ModbusTcpClient:
-        return ModbusTcpClient(self._host, self._port, framer=_CustomSocketFramer)
+        return ModbusTcpClient(self._host, self._port, framer=_CustomSocketFramer, **asdict(self.comm_params))
 
     @staticmethod
     def _read_registers(client: ModbusTcpClient, start_address, count, unit_id):
