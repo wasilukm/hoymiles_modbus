@@ -36,9 +36,9 @@ DTU should be connected via its `Ethernet` port and should have IP address assig
 This library is for creating higher-level applications.
 If you are looking for such, check the following:
 
-* Home Assistant integrations
-  * integration via MQTT - https://github.com/wasilukm/hoymiles-mqtt
-  * Add-on - https://github.com/ArekKubacki/Hoymiles-Plant-DTU-Pro
+  * Home Assistant integrations
+    * [integration via MQTT](https://github.com/wasilukm/hoymiles-mqtt)
+    * [Add-on](https://github.com/ArekKubacki/Hoymiles-Plant-DTU-Pro)
 
 ## Credits
 
