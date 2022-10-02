@@ -17,7 +17,7 @@ from .datatypes import (
 
 @dataclass
 class CommunicationParams:
-    """Low level modbus communication parameters."""
+    """Low level pymodbus communication parameters."""
 
     timeout: int = 3
     """Request timeout."""
@@ -25,6 +25,10 @@ class CommunicationParams:
     """Max number of retries per request."""
     retry_on_empty: bool = False
     """Retry if received an empty response."""
+    close_comm_on_error: bool = False
+    """Close connection on error"""
+    strict: bool = True
+    """Strict timing, 1.5 character between requests."""
     reconnect_delay: int = 60000 * 5
     """Delay in milliseconds before reconnecting."""
 
