@@ -3,11 +3,7 @@
 from dataclasses import asdict, dataclass
 from typing import List, Type, Union
 
-try:
-    from pymodbus.client import ModbusTcpClient
-except ImportError:
-    # for pymodbus <3.0.0
-    from pymodbus.client.sync import ModbusTcpClient
+from pymodbus.client import ModbusTcpClient
 from pymodbus.framer.socket_framer import ModbusSocketFramer
 
 from .datatypes import (
@@ -98,7 +94,7 @@ class HoymilesModbusTCP:
 
     @staticmethod
     def _read_registers(client: ModbusTcpClient, start_address, count, unit_id):
-        result = client.read_holding_registers(start_address, count, unit=unit_id)
+        result = client.read_holding_registers(start_address, count, slave=unit_id)
         if result.isError():
             raise result
         return result
