@@ -45,6 +45,8 @@ markdown_extensions:
       permalink: true
       slugify: !!python/name:pymdownx.slugs.uslugify
   - meta
+watch:
+  - hoymiles_modbus
 plugins:
   - include-markdown
   - search:
@@ -55,17 +57,15 @@ plugins:
           import:
           - https://docs.python.org/3/objects.inv
           - https://mkdocstrings.github.io/autorefs/objects.inv
-          selection:
+          options:
             docstring_style: google
-          rendering:
             merge_init_into_class: yes
             show_submodules: no
           setup_commands:
             - from plum.data import DataMeta
             - from unittest.mock import patch
             - patch.object(DataMeta, "nbytes").start()  # avoid exception when generating docs
-      watch:
-        - hoymiles_modbus
+
 extra:
   social:
     - icon: fontawesome/brands/twitter
