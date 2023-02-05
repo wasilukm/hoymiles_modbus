@@ -3,7 +3,11 @@
 from dataclasses import asdict, dataclass
 from typing import List, Type, Union
 
-from pymodbus.client.sync import ModbusTcpClient
+try:
+    from pymodbus.client import ModbusTcpClient
+except ImportError:
+    # for pymodbus <3.0.0
+    from pymodbus.client.sync import ModbusTcpClient
 from pymodbus.framer.socket_framer import ModbusSocketFramer
 
 from .datatypes import (
