@@ -1,6 +1,6 @@
 # Changelog
 
-## [0.6.0] (2023-11-07)
+## [0.6.0] (2023-02-07)
 
 * add support for Python 3.10 and 3.11
 * remove support for Python 3.6 and 3.7
