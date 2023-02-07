@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.6.0] (2023-11-07)
+
+* add support for Python 3.10 and 3.11
+* remove support for Python 3.6 and 3.7
+
 ## [0.5.0] (2022-10-03)
 
 * Add support for low level pymodbus communication parameters. A user can configure additional
