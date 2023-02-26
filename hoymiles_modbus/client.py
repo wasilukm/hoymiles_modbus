@@ -113,7 +113,7 @@ class HoymilesModbusTCP:
                 result = self._read_registers(client, start_address, 20, self._unit_id)
                 data_to_unpack = result.encode()[1:41]
                 if i < 1 and len(data_to_unpack) < 1:
-                    raise RuntimeError("No microinverters mapped yet.")
+                    raise RuntimeError("Microinverters not mapped yet.")
                 microinverter_data = self._microinverter_data_struct.unpack(
                     data_to_unpack)
                 if microinverter_data.serial_number == self._NULL_MICROINVERTER:
