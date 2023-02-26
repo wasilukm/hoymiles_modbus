@@ -1,5 +1,9 @@
 # Changelog
 
+## [0.6.1] (2023-02-26)
+
+* Raise RuntimeError when trying to read microinverters, but they are not added yet in DTU
+
 ## [0.6.0] (2023-02-07)
 
 * add support for Python 3.10 and 3.11
