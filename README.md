@@ -10,7 +10,8 @@
 
 Python library for gathering data from Hoymiles microinverters.
 
-The library communicates with DTU (DTU-Pro) which is a proxy/monitoring device for microinverters.
+The library communicates with Hoymiles DTU (Pro and Pro-S are supported) which is
+a proxy/monitoring device for microinverters.
 DTU should be connected via its `Ethernet` port and should have IP address assigned by DHCP server.
 
 
