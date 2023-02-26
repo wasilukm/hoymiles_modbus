@@ -214,6 +214,8 @@ def test_modbus_response_exception():
         client_mock.read_holding_registers.return_value = ModbusIOException()
         with pytest.raises(ModbusIOException):
             client.HoymilesModbusTCP('1.2.3.4').dtu
+
+
 def test_exception_when_no_inverters():
     """Test exception when there is no microinverters."""
     client_mock = mock.Mock()
