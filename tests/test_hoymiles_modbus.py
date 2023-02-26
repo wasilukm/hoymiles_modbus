@@ -214,3 +214,13 @@ def test_modbus_response_exception():
         client_mock.read_holding_registers.return_value = ModbusIOException()
         with pytest.raises(ModbusIOException):
             client.HoymilesModbusTCP('1.2.3.4').dtu
+def test_exception_when_no_inverters():
+    """Test exception when there is no microinverters."""
+    client_mock = mock.Mock()
+    with mock.patch.object(client.ModbusTcpClient, '__enter__', return_value=client_mock):
+        client_mock.read_holding_registers.return_value.encode.side_effect = [b'']
+        client_mock.read_holding_registers.return_value.isError.return_value = False
+        hoymiles_modbus_tcp = client.HoymilesModbusTCP('1.2.3.4')
+        with pytest.raises(RuntimeError) as err:
+            hoymiles_modbus_tcp.microinverter_data
+        assert str(err.value) == "Microinverters not mapped yet."
