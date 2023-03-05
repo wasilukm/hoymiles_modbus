@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.6.2] (2023-03-05)
+
+* only documentation changes
+    * fix generating API documentation
+    * extend usage examples
+
 ## [0.6.1] (2023-02-26)
 
 * Raise RuntimeError when trying to read microinverters, but they are not added yet in DTU
