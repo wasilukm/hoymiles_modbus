@@ -43,7 +43,7 @@ markdown_extensions:
   - toc:
       baselevel: 2
       permalink: true
-      slugify: !!python/name:pymdownx.slugs.uslugify
+      slugify: !!python/object/apply:pymdownx.slugs.slugify {kwds: {case: lower}}
   - meta
 watch:
   - hoymiles_modbus
@@ -60,7 +60,7 @@ plugins:
           options:
             docstring_style: google
             merge_init_into_class: yes
-            show_submodules: no
+            show_submodules: yes
           setup_commands:
             - from plum.data import DataMeta
             - from unittest.mock import patch
