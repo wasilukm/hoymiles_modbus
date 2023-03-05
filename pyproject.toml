@@ -1,7 +1,7 @@
 [tool]
 [tool.poetry]
 name = "hoymiles_modbus"
-version = "0.6.1"
+version = "0.6.2"
 homepage = "https://github.com/wasilukm/hoymiles_modbus"
 description = "Gather data from Hoymiles microinverters."
 authors = ["Foo Bar <foo@bar.com>"]
