@@ -394,6 +394,14 @@
 plant_data = HoymilesModbusTCP(&#39;1.2.3.4&#39;).plant_data
 print(plant_data.today_production)
 </code></pre></div>
+<p>The above example assumes <code>MI</code> inverters, for <code>HM</code> change type as below:</p>
+<div class="highlight"><pre><span></span><code>from hoymiles_modbus.client import HoymilesModbusTCP
+from hoymiles_modbus.datatypes import MicroinverterType
+
+plant_data = HoymilesModbusTCP(
+    &#39;1.2.3.4&#39;, microinverter_type=MicroinverterType.HM).plant_data
+print(plant_data.today_production)
+</code></pre></div>
 
 
 
