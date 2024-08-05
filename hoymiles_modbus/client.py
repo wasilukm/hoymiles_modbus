@@ -4,7 +4,9 @@ from dataclasses import asdict, dataclass
 from typing import List, Type, Union
 
 from pymodbus.client import ModbusTcpClient
-from pymodbus.framer.socket_framer import ModbusSocketFramer
+from pymodbus.factory import ClientDecoder
+#from pymodbus.framer.socket import FramerSocket
+from pymodbus.framer.old_framer_socket import ModbusSocketFramer
 
 from .datatypes import (
     HMSeriesMicroinverterData,
@@ -19,18 +21,14 @@ from .datatypes import (
 class CommunicationParams:
     """Low level pymodbus communication parameters."""
 
-    timeout: int = 3
+    timeout: float = 3.0
     """Request timeout."""
     retries: int = 3
     """Max number of retries per request."""
-    retry_on_empty: bool = False
-    """Retry if received an empty response."""
-    close_comm_on_error: bool = False
-    """Close connection on error"""
-    strict: bool = True
-    """Strict timing, 1.5 character between requests."""
-    reconnect_delay: int = 60000 * 5
-    """Delay in milliseconds before reconnecting."""
+    reconnect_delay: float = 0.5
+    """Minimum delay in seconds.milliseconds before reconnecting."""
+    reconnect_delay_max: float = 1.5
+    """Maximum delay in seconds.milliseconds before reconnecting."""
 
 
 class _CustomSocketFramer(ModbusSocketFramer):
@@ -43,9 +41,10 @@ class _CustomSocketFramer(ModbusSocketFramer):
             fixed_packet[8] = len(fixed_packet[9:])
         return bytes(fixed_packet)
 
-    def processIncomingPacket(self, data, callback, unit, **kwargs):
+    def decode(self, data: bytes) -> tuple[int, int, int, bytes]:
         fixed_data = self._data_length_fixer(data)
-        super().processIncomingPacket(fixed_data, callback, unit, **kwargs)
+
+        return super().decode_data(fixed_data)
 
 
 class HoymilesModbusTCP:
@@ -90,12 +89,10 @@ class HoymilesModbusTCP:
         return self._comm_params
 
     def _get_client(self) -> ModbusTcpClient:
-        return ModbusTcpClient(
-            host=self._host,
-            port=self._port,
-            framer=_CustomSocketFramer,  # type: ignore[arg-type]
-            **asdict(self.comm_params),
-        )
+        client = ModbusTcpClient(self._host, port=self._port, **asdict(self.comm_params))
+        client.framer = _CustomSocketFramer(decoder=ClientDecoder(), client=client)
+
+        return client
 
     @staticmethod
     def _read_registers(client: ModbusTcpClient, start_address, count, unit_id):
