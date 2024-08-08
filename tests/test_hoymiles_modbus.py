@@ -1,14 +1,13 @@
 #!/usr/bin/env python
 """Tests for `hoymiles_modbus` package."""
 
-import pytest
 from decimal import Decimal
 from unittest import mock
-from pymodbus.exceptions import ModbusIOException
+
+import pytest
 
 from hoymiles_modbus import client
-from hoymiles_modbus.datatypes import MISeriesMicroinverterData, HMSeriesMicroinverterData, MicroinverterType
-
+from hoymiles_modbus.datatypes import HMSeriesMicroinverterData, MicroinverterType, MISeriesMicroinverterData
 
 example_raw_modbus_responses = [
     b'(\x0c\x1032\x41cU\x01\x01^\x00\x02\tM\x13\x88\x00f\x02\xef\x00\x01$G\x00+\x00\x03\x00\x00\x00\x00\x01'
@@ -211,8 +210,10 @@ def test_modbus_response_exception():
     """Verify that exception is raised when error in modbus response."""
     client_mock = mock.Mock()
     with mock.patch.object(client.ModbusTcpClient, '__enter__', return_value=client_mock):
-        client_mock.read_holding_registers.return_value = ModbusIOException()
-        with pytest.raises(ModbusIOException):
+        response = mock.Mock()
+        response.isError.return_value = True
+        client_mock.read_holding_registers.return_value = response
+        with pytest.raises(RuntimeError):
             client.HoymilesModbusTCP('1.2.3.4').dtu
 
 

@@ -90,13 +90,18 @@ class HoymilesModbusTCP:
         return self._comm_params
 
     def _get_client(self) -> ModbusTcpClient:
-        return ModbusTcpClient(self._host, self._port, framer=_CustomSocketFramer, **asdict(self.comm_params))
+        return ModbusTcpClient(
+            host=self._host,
+            port=self._port,
+            framer=_CustomSocketFramer,  # type: ignore[arg-type]
+            **asdict(self.comm_params),
+        )
 
     @staticmethod
     def _read_registers(client: ModbusTcpClient, start_address, count, unit_id):
         result = client.read_holding_registers(start_address, count, slave=unit_id)
         if result.isError():
-            raise result
+            raise RuntimeError(f'Received error response {result}')
         return result
 
     @property

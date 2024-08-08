@@ -56,7 +56,7 @@ class MicroinverterType(Enum):
     """HM series."""
 
 
-class MISeriesMicroinverterData(Structure):
+class MISeriesMicroinverterData(Structure):  # type: ignore[misc]
     """MI series microinverter status data structure."""
 
     data_type: int = member(fmt=uint8)
@@ -77,7 +77,7 @@ class MISeriesMicroinverterData(Structure):
     reserved: List[int] = member(fmt=_reserved)
 
 
-class HMSeriesMicroinverterData(MISeriesMicroinverterData):
+class HMSeriesMicroinverterData(MISeriesMicroinverterData):  # type: ignore[misc]
     """HM series microinverter status data structure."""
 
     pv_current: Decimal = member(fmt=_udec16p2, doc='PV current [A].')
