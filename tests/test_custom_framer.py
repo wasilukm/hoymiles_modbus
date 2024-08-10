@@ -1,3 +1,4 @@
+"""Tests for _CustomSocketFramer."""
 from unittest.mock import patch
 
 from hoymiles_modbus.client import _CustomSocketFramer
@@ -13,6 +14,7 @@ def test_short_frame():
 
 
 def test_long_frame():
+    """Verify that frames longer than 9 have fixed length byte"""
     framer = _CustomSocketFramer(decoder=None)
     """Verify that frames longer than 9 have fixed length byte."""
     with patch('hoymiles_modbus.client.ModbusSocketFramer.processIncomingPacket') as super_process_incoming_packet:
