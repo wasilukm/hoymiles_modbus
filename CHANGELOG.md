@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.6.3] (2024-08-10)
+
+* prevent installing pymodbus 3.7 and greater which has broken backward compatibility
+* don't treat modbus response as an exception, instead raise RuntimeError for negative response
+
 ## [0.6.2] (2023-03-05)
 
 * only documentation changes
