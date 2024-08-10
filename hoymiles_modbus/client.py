@@ -45,7 +45,7 @@ class _CustomSocketFramer(ModbusSocketFramer):
 
     def processIncomingPacket(self, data, callback, unit, **kwargs):
         fixed_data = self._data_length_fixer(data)
-        return super().processIncomingPacket(fixed_data, callback, unit, **kwargs)
+        super().processIncomingPacket(fixed_data, callback, unit, **kwargs)
 
 
 class HoymilesModbusTCP:
