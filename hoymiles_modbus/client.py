@@ -93,7 +93,7 @@ class HoymilesModbusTCP:
         return ModbusTcpClient(
             host=self._host,
             port=self._port,
-            framer=_CustomSocketFramer,
+            framer=_CustomSocketFramer,  # type: ignore[arg-type]
             **asdict(self.comm_params),
         )
 
