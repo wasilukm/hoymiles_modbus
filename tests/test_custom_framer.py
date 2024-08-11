@@ -1,4 +1,5 @@
 """Tests for _CustomSocketFramer."""
+
 from unittest.mock import patch
 
 from hoymiles_modbus.client import _CustomSocketFramer
