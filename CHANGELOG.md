@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.7.0] (2024-08-12)
+
+* add support for Python 3.12
+* BREAKING CHANGE: drop support for Python 3.8
+
+
 ## [0.6.3] (2024-08-10)
 
 * prevent installing pymodbus 3.7 and greater which has broken backward compatibility
