@@ -4,7 +4,7 @@ from dataclasses import asdict, dataclass
 from typing import List, Type, Union
 
 from pymodbus.client import ModbusTcpClient
-from pymodbus.framer.socket_framer import ModbusSocketFramer
+from pymodbus.framer.old_framer_socket import ModbusSocketFramer
 
 from .datatypes import (
     HMSeriesMicroinverterData,
@@ -19,18 +19,14 @@ from .datatypes import (
 class CommunicationParams:
     """Low level pymodbus communication parameters."""
 
-    timeout: int = 3
-    """Request timeout."""
+    timeout: float = 3
+    """Timeout for a connection request, in seconds."""
     retries: int = 3
     """Max number of retries per request."""
-    retry_on_empty: bool = False
-    """Retry if received an empty response."""
-    close_comm_on_error: bool = False
-    """Close connection on error"""
-    strict: bool = True
-    """Strict timing, 1.5 character between requests."""
-    reconnect_delay: int = 60000 * 5
-    """Delay in milliseconds before reconnecting."""
+    reconnect_delay: float = 0.1
+    """Minimum delay in seconds.milliseconds before reconnecting."""
+    reconnect_delay_max: float = 300
+    """Maximum delay in seconds.milliseconds before reconnecting."""
 
 
 class _CustomSocketFramer(ModbusSocketFramer):
@@ -90,12 +86,16 @@ class HoymilesModbusTCP:
         return self._comm_params
 
     def _get_client(self) -> ModbusTcpClient:
-        return ModbusTcpClient(
+        client = ModbusTcpClient(
             host=self._host,
             port=self._port,
-            framer=_CustomSocketFramer,  # type: ignore[arg-type]
             **asdict(self.comm_params),
         )
+
+        # reinitialize frame with custom framer, use already existing decoder
+        # custom framer is for fixing data length in received frames
+        client.framer = _CustomSocketFramer(client.framer.decoder, client)
+        return client
 
     @staticmethod
     def _read_registers(client: ModbusTcpClient, start_address, count, unit_id):
