@@ -23,8 +23,9 @@ class CommunicationParams:
     """Timeout for a connection request, in seconds."""
     retries: int = 3
     """Max number of retries per request."""
-    reconnect_delay: float = 0.1
-    """Minimum delay in seconds.milliseconds before reconnecting."""
+    reconnect_delay: float = 0
+    """Minimum delay in seconds.milliseconds before reconnecting
+    Default is 0 which means that reconnecting is disabled."""
     reconnect_delay_max: float = 300
     """Maximum delay in seconds.milliseconds before reconnecting."""
 
