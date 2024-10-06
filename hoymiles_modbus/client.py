@@ -96,8 +96,9 @@ class HoymilesModbusTCP:
             **asdict(self.comm_params),
         )
 
-        # reinitialize frame with custom framer, use already existing decoder
+        # reinitialize framer with custom framer, use already existing decoder
         # custom framer is for fixing data length in received frames
+        # (some DTUs send corrupted packets)
         client.framer = _CustomSocketFramer(client.framer.decoder, client)
         return client
 
