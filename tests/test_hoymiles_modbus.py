@@ -38,8 +38,8 @@ example_unknown_series_raw_responses = [
 ]
 
 
-def test_inverters_data_decode_mi_series():
-    """Test decoding inverters data."""
+def test_inverter_data_decode_mi_series():
+    """Test decoding MI series inverters data."""
     client_mock = mock.Mock()
     with mock.patch.object(ModbusTcpClient, '__enter__', return_value=client_mock):
         client_mock.read_holding_registers.return_value.encode.side_effect = example_mi_series_raw_responses
@@ -68,8 +68,8 @@ def test_inverters_data_decode_mi_series():
         assert inverters_data == expected
 
 
-def test_inverters_data_decode_hm_series():
-    """Test decoding inverters data."""
+def test_inverter_data_decode_hm_series():
+    """Test decoding HM inverter data."""
     client_mock = mock.Mock()
     with mock.patch.object(ModbusTcpClient, '__enter__', return_value=client_mock):
         client_mock.read_holding_registers.return_value.encode.side_effect = example_hm_series_raw_responses
@@ -98,8 +98,8 @@ def test_inverters_data_decode_hm_series():
         assert inverters_data == expected
 
 
-def test_unknown_inverters_type():
-    """Test exception for unknown inverters type."""
+def test_unknown_inverter_type():
+    """Test exception for unknown inverter type."""
     client_mock = mock.Mock()
     with mock.patch.object(ModbusTcpClient, '__enter__', return_value=client_mock):
         client_mock.read_holding_registers.return_value.encode.side_effect = example_unknown_series_raw_responses
@@ -109,7 +109,7 @@ def test_unknown_inverters_type():
             _ = HoymilesModbusTCP('1.2.3.4').inverters
 
 
-def test_stop_inverters_data_decode_on_empty_serial():
+def test_stop_inverter_data_decode_on_empty_serial():
     """Verify that requesting inverters register stops on receiving first empty serial number."""
     client_mock = mock.Mock()
     with mock.patch.object(ModbusTcpClient, '__enter__', return_value=client_mock):
@@ -230,7 +230,7 @@ def test_modbus_response_exception():
         response.isError.return_value = True
         client_mock.read_holding_registers.return_value = response
         with pytest.raises(RuntimeError):
-            HoymilesModbusTCP('1.2.3.4').dtu
+            _ = HoymilesModbusTCP('1.2.3.4').dtu
 
 
 def test_exception_when_no_inverters():
@@ -241,5 +241,5 @@ def test_exception_when_no_inverters():
         client_mock.read_holding_registers.return_value.isError.return_value = False
         hoymiles_modbus_tcp = HoymilesModbusTCP('1.2.3.4')
         with pytest.raises(RuntimeError) as err:
-            hoymiles_modbus_tcp.inverters
+            _ = hoymiles_modbus_tcp.inverters
         assert str(err.value) == "Inverters not mapped yet."
