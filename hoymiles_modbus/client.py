@@ -93,7 +93,7 @@ class HoymilesModbusTCP:
         return result
 
     @property
-    def microinverter_data(self) -> list[InverterData]:
+    def inverters(self) -> list[InverterData]:
         """Status data from all inverters.
 
         Each `get` is a new request and data from the installation.
@@ -129,8 +129,8 @@ class HoymilesModbusTCP:
         Each `get` is a new request and data from the installation.
 
         """
-        inverter_data = self.microinverter_data
-        data = PlantData(self.dtu, microinverter_data=inverter_data)
+        inverter_data = self.inverters
+        data = PlantData(self.dtu, inverters=inverter_data)
         for inverter in inverter_data:
             if inverter.link_status:
                 data.pv_power += inverter.pv_power

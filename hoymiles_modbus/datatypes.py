@@ -119,5 +119,5 @@ class PlantData:
     """Total production [Wh]."""
     alarm_flag: bool = False
     """Alarm indicator. True means that at least one inverter reported an alarm."""
-    microinverter_data: list[InverterData] = field(default_factory=list)
+    inverters: list[InverterData] = field(default_factory=list)
     """Data for each inverter."""
