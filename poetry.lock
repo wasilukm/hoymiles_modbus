@@ -2005,4 +2005,4 @@ test = ["black", "flake8", "flake8-docstrings", "isort", "mypy", "pytest", "pyte
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.9,<3.13"
-content-hash = "dc139a2d5cf8b72cc5671002a3f29226bac010cc99490c95aef297b2fd08cb26"
+content-hash = "7082bbd8425a0d9217d0fbc8c8f312553a6218390d90770639fb0165bdeb3340"
