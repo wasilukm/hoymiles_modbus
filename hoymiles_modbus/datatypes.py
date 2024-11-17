@@ -47,7 +47,7 @@ _serial_number_t = _SerialNumberX(name='serial_number_t', nbytes=6)
 _reserved = ArrayX(name='reserved', fmt=uint8)
 
 
-class PVCurrentType(Enum):
+class _PVCurrentType(Enum):
     """PV current datatype depending on inverter type."""
 
     MI = _udec16p1
@@ -58,11 +58,15 @@ class PVCurrentType(Enum):
 
 def _pv_current_type(serial: str) -> DecimalX:
     if serial.startswith('10'):
-        current_type = PVCurrentType.MI.value
+        current_type = _PVCurrentType.MI.value
     elif serial.startswith('11'):
-        current_type = PVCurrentType.HM.value
+        current_type = _PVCurrentType.HM.value
+    elif serial == '000000000000':
+        # all zero serial number means empty inverter data
+        # in this case type of current value is not important
+        current_type = _PVCurrentType.MI.value
     else:
-        raise RuntimeError(f"Couldn't detect inverter type for serial {serial}." "Please report an issue.")
+        raise ValueError(f"Couldn't detect inverter type for serial {serial}. Please report an issue.")
     return current_type
 
 
