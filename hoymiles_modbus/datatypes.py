@@ -77,31 +77,31 @@ class InverterData(Structure):  # type: ignore[misc]
     serial_number: str = member(fmt=_serial_number_t)
     """Inverter serial number."""
     port_number: int = member(fmt=uint8)
-    'Port number.'
+    """Port number."""
     pv_voltage: Decimal = member(fmt=_udec16p1)
-    'PV voltage [V].'
+    """PV voltage [V]."""
     pv_current: Decimal = member(fmt=_pv_current_type, fmt_arg=serial_number)  # type: ignore[arg-type]
-    'PV current [A].'
+    """PV current [A]."""
     grid_voltage: Decimal = member(fmt=_udec16p1)
-    'Grid voltage [V].'
+    """Grid voltage [V]."""
     grid_frequency: Decimal = member(fmt=_udec16p2)
-    'Grid frequency [Hz].'
+    """Grid frequency [Hz]."""
     pv_power: Decimal = member(fmt=_udec16p1)
-    'PV power [W].'
+    """PV power [W]."""
     today_production: int = member(fmt=uint16)
-    'Today production [Wh].'
+    """Today production [Wh]."""
     total_production: int = member(fmt=uint32)
-    'Total production [Wh].'
+    """Total production [Wh]."""
     temperature: Decimal = member(fmt=_sdec16p1)
-    'Inverter temperature [°C].'
+    """Inverter temperature [°C]."""
     operating_status: int = member(fmt=uint16)
-    'Operating status.'
+    """Operating status."""
     alarm_code: int = member(fmt=uint16)
-    'Alarm code.'
+    """Alarm code."""
     alarm_count: int = member(fmt=uint16)
-    'Alarm count.'
+    """Alarm count."""
     link_status: int = member(fmt=uint8)
-    'Link status.'
+    """Link status."""
     reserved: list[int] = member(fmt=_reserved)
 
 
