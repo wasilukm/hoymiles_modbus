@@ -129,9 +129,11 @@ class HoymilesModbusTCP:
         Each `get` is a new request and data from the installation.
 
         """
-        inverter_data = self.inverters
-        data = PlantData(self.dtu, inverters=inverter_data)
-        for inverter in inverter_data:
+        inverters = self.inverters
+        data = PlantData(self.dtu, inverters=inverters)
+        for inverter in inverters:
+            # calculate plant data from inverters
+            # only active inverters are included
             if inverter.link_status:
                 data.pv_power += inverter.pv_power
                 data.today_production += inverter.today_production
