@@ -39,7 +39,7 @@ example_unknown_series_raw_responses = [
 
 
 def test_inverter_data_decode_mi_series():
-    """Test decoding MI series inverters data."""
+    """Test decoding MI series inverter data."""
     client_mock = mock.Mock()
     with mock.patch.object(ModbusTcpClient, '__enter__', return_value=client_mock):
         client_mock.read_holding_registers.return_value.encode.side_effect = example_mi_series_raw_responses
@@ -110,7 +110,7 @@ def test_unknown_inverter_type():
 
 
 def test_stop_inverter_data_decode_on_empty_serial():
-    """Verify that requesting inverters register stops on receiving first empty serial number."""
+    """Verify that inverters data gathering stops on receiving first empty serial number."""
     client_mock = mock.Mock()
     with mock.patch.object(ModbusTcpClient, '__enter__', return_value=client_mock):
         client_mock.read_holding_registers.return_value.encode.side_effect = example_mi_series_raw_responses + [
@@ -234,7 +234,7 @@ def test_modbus_response_exception():
 
 
 def test_exception_when_no_inverters():
-    """Test exception when there is no inverterss."""
+    """Test exception when there are no inverters."""
     client_mock = mock.Mock()
     with mock.patch.object(ModbusTcpClient, '__enter__', return_value=client_mock):
         client_mock.read_holding_registers.return_value.encode.side_effect = [b'']
