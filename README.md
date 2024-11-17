@@ -24,7 +24,7 @@ DTU should be connected via its `Ethernet` port and should have IP address assig
 ## Features
 
 * Communication via Modbus TCP
-* Decode all microinverter status registers, which include information such as:
+* Decode all inverter status registers, which include information such as:
   * current production
   * total production
   * today production
