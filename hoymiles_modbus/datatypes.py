@@ -77,7 +77,9 @@ class InverterData(Structure):  # type: ignore[misc]
     serial_number: str = member(fmt=_serial_number_t, doc='Inverter serial number.')
     port_number: int = member(fmt=uint8, doc='Port number.')
     pv_voltage: Decimal = member(fmt=_udec16p1, doc='PV voltage [V].')
-    pv_current: Decimal = member(fmt=_pv_current_type, fmt_arg=serial_number, doc='PV current [A].')
+    pv_current: Decimal = member(
+        fmt=_pv_current_type, fmt_arg=serial_number, doc='PV current [A].'  # type: ignore[arg-type]
+    )
     grid_voltage: Decimal = member(fmt=_udec16p1, doc='Grid voltage [V].')
     grid_frequency: Decimal = member(fmt=_udec16p2, doc='Grid frequency [Hz].')
     pv_power: Decimal = member(fmt=_udec16p1, doc='PV power [W].')
