@@ -74,22 +74,34 @@ class InverterData(Structure):  # type: ignore[misc]
     """Inverter data structure."""
 
     data_type: int = member(fmt=uint8)
-    serial_number: str = member(fmt=_serial_number_t, doc='Inverter serial number.')
-    port_number: int = member(fmt=uint8, doc='Port number.')
-    pv_voltage: Decimal = member(fmt=_udec16p1, doc='PV voltage [V].')
-    pv_current: Decimal = member(
-        fmt=_pv_current_type, fmt_arg=serial_number, doc='PV current [A].'  # type: ignore[arg-type]
-    )
-    grid_voltage: Decimal = member(fmt=_udec16p1, doc='Grid voltage [V].')
-    grid_frequency: Decimal = member(fmt=_udec16p2, doc='Grid frequency [Hz].')
-    pv_power: Decimal = member(fmt=_udec16p1, doc='PV power [W].')
-    today_production: int = member(fmt=uint16, doc='Today production [Wh].')
-    total_production: int = member(fmt=uint32, doc='Total production [Wh].')
-    temperature: Decimal = member(fmt=_sdec16p1, doc='Inverter temperature [°C].')
-    operating_status: int = member(fmt=uint16, doc='Operating status.')
-    alarm_code: int = member(fmt=uint16, doc='Alarm code.')
-    alarm_count: int = member(fmt=uint16, doc='Alarm count.')
-    link_status: int = member(fmt=uint8, doc='Link status.')
+    serial_number: str = member(fmt=_serial_number_t)
+    """Inverter serial number."""
+    port_number: int = member(fmt=uint8)
+    'Port number.'
+    pv_voltage: Decimal = member(fmt=_udec16p1)
+    'PV voltage [V].'
+    pv_current: Decimal = member(fmt=_pv_current_type, fmt_arg=serial_number)  # type: ignore[arg-type]
+    'PV current [A].'
+    grid_voltage: Decimal = member(fmt=_udec16p1)
+    'Grid voltage [V].'
+    grid_frequency: Decimal = member(fmt=_udec16p2)
+    'Grid frequency [Hz].'
+    pv_power: Decimal = member(fmt=_udec16p1)
+    'PV power [W].'
+    today_production: int = member(fmt=uint16)
+    'Today production [Wh].'
+    total_production: int = member(fmt=uint32)
+    'Total production [Wh].'
+    temperature: Decimal = member(fmt=_sdec16p1)
+    'Inverter temperature [°C].'
+    operating_status: int = member(fmt=uint16)
+    'Operating status.'
+    alarm_code: int = member(fmt=uint16)
+    'Alarm code.'
+    alarm_count: int = member(fmt=uint16)
+    'Alarm count.'
+    link_status: int = member(fmt=uint8)
+    'Link status.'
     reserved: list[int] = member(fmt=_reserved)
 
 
