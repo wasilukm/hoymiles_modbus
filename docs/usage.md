@@ -1,7 +1,5 @@
 # Usage
 
-To use hoymiles_modbus in a project
-
 ```
 from hoymiles_modbus.client import HoymilesModbusTCP
 
