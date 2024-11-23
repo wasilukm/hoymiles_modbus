@@ -30,13 +30,13 @@ class _CustomDecoder(ClientDecoder):
 
     @staticmethod
     def _data_length_fixer(packet):  # pragma: no cover
+        LENGTH_POSITION = 1
         fixed_packet = list(packet)
-        if len(packet) > 9:
-            fixed_packet[8] = len(fixed_packet[9:])
+        if len(packet) > LENGTH_POSITION + 1:
+            fixed_packet[LENGTH_POSITION] = len(fixed_packet[LENGTH_POSITION + 1 :])
         return bytes(fixed_packet)
 
     def decode(self, message):
-        print(message)
         return super().decode(self._data_length_fixer(message))
 
 
