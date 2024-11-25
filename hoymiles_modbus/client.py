@@ -3,7 +3,7 @@
 from dataclasses import asdict, dataclass
 
 from pymodbus.client import ModbusTcpClient
-from pymodbus.factory import ClientDecoder
+from pymodbus.pdu import DecodePDU
 
 from .datatypes import InverterData, PlantData, _serial_number_t
 
@@ -26,7 +26,7 @@ class CommunicationParams:
     """Maximum delay in seconds.milliseconds before reconnecting."""
 
 
-class _CustomDecoder(ClientDecoder):
+class _CustomDecoder(DecodePDU):
 
     @staticmethod
     def _data_length_fixer(packet):  # pragma: no cover
@@ -81,7 +81,7 @@ class HoymilesModbusTCP:
         # reinitialize Decoder with the custom one
         # custom Decoder is for fixing data length in received frames
         # (some DTUs send corrupted packets)
-        client.framer.decoder = _CustomDecoder()
+        client.framer.decoder = _CustomDecoder(is_server=False)
 
         return client
 
