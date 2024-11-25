@@ -3,7 +3,7 @@
 from dataclasses import asdict, dataclass
 
 from pymodbus.client import ModbusTcpClient
-from pymodbus.framer.old_framer_socket import ModbusSocketFramer
+from pymodbus.pdu import DecodePDU
 
 from .datatypes import InverterData, PlantData, _serial_number_t
 
@@ -26,19 +26,18 @@ class CommunicationParams:
     """Maximum delay in seconds.milliseconds before reconnecting."""
 
 
-class _CustomSocketFramer(ModbusSocketFramer):
-    """Custom framer for fixing data length in received modbus packets."""
+class _CustomDecoder(DecodePDU):
 
     @staticmethod
     def _data_length_fixer(packet):  # pragma: no cover
+        LENGTH_POSITION = 1
         fixed_packet = list(packet)
-        if len(packet) > 9:
-            fixed_packet[8] = len(fixed_packet[9:])
+        if len(packet) > LENGTH_POSITION + 1:
+            fixed_packet[LENGTH_POSITION] = len(fixed_packet[LENGTH_POSITION + 1 :])
         return bytes(fixed_packet)
 
-    def processIncomingPacket(self, data, callback, unit, **kwargs):
-        fixed_data = self._data_length_fixer(data)
-        super().processIncomingPacket(fixed_data, callback, unit, **kwargs)
+    def decode(self, message):
+        return super().decode(self._data_length_fixer(message))
 
 
 class HoymilesModbusTCP:
@@ -79,10 +78,11 @@ class HoymilesModbusTCP:
             **asdict(self.comm_params),
         )
 
-        # reinitialize framer with custom framer, use already existing decoder
-        # custom framer is for fixing data length in received frames
+        # reinitialize Decoder with the custom one
+        # custom Decoder is for fixing data length in received frames
         # (some DTUs send corrupted packets)
-        client.framer = _CustomSocketFramer(client.framer.decoder, client)
+        client.framer.decoder = _CustomDecoder(is_server=False)
+
         return client
 
     @staticmethod
