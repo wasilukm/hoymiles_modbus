@@ -1,43 +1,12 @@
 """Hoymiles Modbus client."""
 
-from dataclasses import asdict, dataclass
+from typing import TYPE_CHECKING
 
-from pymodbus.client import ModbusTcpClient
-from pymodbus.pdu import DecodePDU
-
+from ._modbus_tcp_client import CommunicationParams, create_modbus_tcp_client
 from .datatypes import InverterData, PlantData, _serial_number_t
 
-
-@dataclass
-class CommunicationParams:
-    """Low level pymodbus communication parameters."""
-
-    timeout: float = 3
-    """Timeout for a connection request, in seconds."""
-    retries: int = 3
-    """Max number of retries per request."""
-    reconnect_delay: float = 0
-    """Minimum delay in seconds.milliseconds before reconnecting.
-    Doubles automatically with each unsuccessful connect, from
-    **reconnect_delay** to **reconnect_delay_max**.
-
-    Default is 0 which means that reconnecting is disabled."""
-    reconnect_delay_max: float = 300
-    """Maximum delay in seconds.milliseconds before reconnecting."""
-
-
-class _CustomDecoder(DecodePDU):
-
-    @staticmethod
-    def _data_length_fixer(packet):  # pragma: no cover
-        LENGTH_POSITION = 1
-        fixed_packet = list(packet)
-        if len(packet) > LENGTH_POSITION + 1:
-            fixed_packet[LENGTH_POSITION] = len(fixed_packet[LENGTH_POSITION + 1 :])
-        return bytes(fixed_packet)
-
-    def decode(self, message):
-        return super().decode(self._data_length_fixer(message))
+if TYPE_CHECKING:
+    from pymodbus.client import ModbusTcpClient
 
 
 class HoymilesModbusTCP:
@@ -71,22 +40,11 @@ class HoymilesModbusTCP:
         """Low level communication parameters."""
         return self._comm_params
 
-    def _get_client(self) -> ModbusTcpClient:
-        client = ModbusTcpClient(
-            host=self._host,
-            port=self._port,
-            **asdict(self.comm_params),
-        )
-
-        # reinitialize Decoder with the custom one
-        # custom Decoder is for fixing data length in received frames
-        # (some DTUs send corrupted packets)
-        client.framer.decoder = _CustomDecoder(is_server=False)
-
-        return client
+    def _get_client(self) -> "ModbusTcpClient":
+        return create_modbus_tcp_client(self._host, self._port, self.comm_params)
 
     @staticmethod
-    def _read_registers(client: ModbusTcpClient, start_address, count, unit_id):
+    def _read_registers(client: 'ModbusTcpClient', start_address, count, unit_id):
         result = client.read_holding_registers(start_address, count, slave=unit_id)
         if result.isError():
             raise RuntimeError(f'Received error response {result}')
