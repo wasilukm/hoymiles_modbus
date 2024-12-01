@@ -14,6 +14,8 @@ The library communicates with Hoymiles DTU (Pro and Pro-S are supported) which i
 a proxy/monitoring device for inverters.
 DTU should be connected via its `Ethernet` port and should have IP address assigned by DHCP server.
 
+Disclaimer: This is an independent project, not affiliated with Hoymiles. Any trademarks or product names mentioned are the property of their respective owners.
+
 
 * Documentation: <https://wasilukm.github.io/hoymiles_modbus>
 * GitHub: <https://github.com/wasilukm/hoymiles_modbus>
