@@ -44,7 +44,7 @@ class HoymilesModbusTCP:
         return create_modbus_tcp_client(self._host, self._port, self.comm_params)
 
     @staticmethod
-    def _read_registers(client: 'ModbusTcpClient', start_address, count, unit_id):
+    def _read_registers(client: 'ModbusTcpClient', start_address: int, count: int, unit_id: int):
         result = client.read_holding_registers(start_address, count, slave=unit_id)
         if result.isError():
             raise RuntimeError(f'Received error response {result}')

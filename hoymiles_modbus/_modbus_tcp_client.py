@@ -11,12 +11,12 @@ if TYPE_CHECKING:  # pragma: no cover
 class _CustomReadHoldingRegistersResponse(ReadHoldingRegistersResponse):
 
     @staticmethod
-    def _data_size_fixer(packet):
+    def _data_size_fixer(packet: bytes):
         fixed_packet = list(packet)
         fixed_packet[0] = len(fixed_packet[1:])  # calculate new data size
         return bytes(fixed_packet)
 
-    def decode(self, data):
+    def decode(self, data: bytes):
         fixed = self._data_size_fixer(data)
         return super().decode(fixed)
 
@@ -36,8 +36,8 @@ def create_modbus_tcp_client(host: str, port: int, comm_params: 'CommunicationPa
         **asdict(comm_params),
     )
 
-    # Register custom PDU class which fixed data size in response from DTU
-    # (some DTUs send corrupted packets)
+    # Register custom PDU class which fixes data size in a response from DTU
+    # (some DTUs send responses with wrong data size byte)
     client.framer.decoder.register(_CustomReadHoldingRegistersResponse)
 
     return client
