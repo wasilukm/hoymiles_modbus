@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING
 from ._modbus_tcp_client import CommunicationParams, create_modbus_tcp_client
 from .datatypes import InverterData, PlantData, _serial_number_t
 
-if TYPE_CHECKING:
+if TYPE_CHECKING:  # pragma: no cover
     from pymodbus.client import ModbusTcpClient
 
 

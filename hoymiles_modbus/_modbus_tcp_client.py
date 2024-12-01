@@ -27,8 +27,7 @@ class _CustomReadHoldingRegistersResponse(ReadHoldingRegistersResponse):
     @staticmethod
     def _data_size_fixer(packet):
         fixed_packet = list(packet)
-        if packet:
-            fixed_packet[0] = len(fixed_packet[1:])  # calculate new data size
+        fixed_packet[0] = len(fixed_packet[1:])  # calculate new data size
         return bytes(fixed_packet)
 
     def decode(self, data):
