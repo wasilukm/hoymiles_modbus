@@ -36,12 +36,7 @@ Disclaimer: This is an independent project, not affiliated with Hoymiles. Any tr
   * grid voltage and frequency
 
 ## Applications
-This library is for creating higher-level applications.
-If you are looking for such, check the following:
-
-  * Home Assistant integrations
-    * [integration via MQTT](https://github.com/wasilukm/hoymiles-mqtt)
-    * [Add-on](https://github.com/ArekKubacki/Hoymiles-Plant-DTU-Pro)
+This library is for creating higher-level applications such as [Home Assistant integration](https://github.com/wasilukm/hoymiles-mqtt)
 
 ## Credits
 
