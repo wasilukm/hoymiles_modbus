@@ -37,7 +37,7 @@ class _CustomReadHoldingRegistersResponse(ReadHoldingRegistersResponse):
 
 
 def create_modbus_tcp_client(host: str, port: int, comm_params: CommunicationParams) -> ModbusTcpClient:
-    """Crate and instance of Modbus TCP client.
+    """Create an instance of Modbus TCP client.
 
     Arguments:
         host: Host IP address or host name
@@ -45,7 +45,6 @@ def create_modbus_tcp_client(host: str, port: int, comm_params: CommunicationPar
         comm_params: communication parameters
 
     """
-
     client = ModbusTcpClient(
         host=host,
         port=port,
