@@ -1,25 +1,11 @@
-from dataclasses import asdict, dataclass
+from dataclasses import asdict
+from typing import TYPE_CHECKING
 
 from pymodbus.client import ModbusTcpClient
 from pymodbus.pdu.register_read_message import ReadHoldingRegistersResponse
 
-
-@dataclass
-class CommunicationParams:
-    """Low level pymodbus communication parameters."""
-
-    timeout: float = 3
-    """Timeout for a connection request, in seconds."""
-    retries: int = 3
-    """Max number of retries per request."""
-    reconnect_delay: float = 0
-    """Minimum delay in seconds.milliseconds before reconnecting.
-    Doubles automatically with each unsuccessful connect, from
-    **reconnect_delay** to **reconnect_delay_max**.
-
-    Default is 0 which means that reconnecting is disabled."""
-    reconnect_delay_max: float = 300
-    """Maximum delay in seconds.milliseconds before reconnecting."""
+if TYPE_CHECKING:  # pragma: no cover
+    from .datatypes import CommunicationParams
 
 
 class _CustomReadHoldingRegistersResponse(ReadHoldingRegistersResponse):
@@ -35,7 +21,7 @@ class _CustomReadHoldingRegistersResponse(ReadHoldingRegistersResponse):
         return super().decode(fixed)
 
 
-def create_modbus_tcp_client(host: str, port: int, comm_params: CommunicationParams) -> ModbusTcpClient:
+def create_modbus_tcp_client(host: str, port: int, comm_params: 'CommunicationParams') -> ModbusTcpClient:
     """Create an instance of Modbus TCP client.
 
     Arguments:

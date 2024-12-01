@@ -1,6 +1,7 @@
 """Tests for PDU data size fixer.."""
 
-from hoymiles_modbus._modbus_tcp_client import CommunicationParams, create_modbus_tcp_client
+from hoymiles_modbus._modbus_tcp_client import create_modbus_tcp_client
+from hoymiles_modbus.datatypes import CommunicationParams
 
 
 def test_data_size_fixer():

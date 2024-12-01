@@ -2,8 +2,8 @@
 
 from typing import TYPE_CHECKING
 
-from ._modbus_tcp_client import CommunicationParams, create_modbus_tcp_client
-from .datatypes import InverterData, PlantData, _serial_number_t
+from ._modbus_tcp_client import create_modbus_tcp_client
+from .datatypes import CommunicationParams, InverterData, PlantData, _serial_number_t
 
 if TYPE_CHECKING:  # pragma: no cover
     from pymodbus.client import ModbusTcpClient
@@ -33,7 +33,7 @@ class HoymilesModbusTCP:
         self._port: int = port
         self._dtu_serial_number: str = ''
         self._unit_id = unit_id
-        self._comm_params: CommunicationParams = CommunicationParams()
+        self._comm_params: 'CommunicationParams' = CommunicationParams()
 
     @property
     def comm_params(self) -> CommunicationParams:
