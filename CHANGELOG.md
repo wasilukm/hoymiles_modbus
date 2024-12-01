@@ -1,5 +1,21 @@
 # Changelog
 
+## [0.8.0] (2024-12-01)
+
+Features:
+ * support for automatic detection of inverter type
+ * exposed reconnect_delay_max connection parameter
+
+Breaking changes:
+* support for pymodbus 3.7, dropped support for older versions
+* `CommunicationParams` class moved to `hoymiles_modbus.datatypes`
+* connection parameters: `retry_on_empty`, `close_comm_on_error` and `strict` are no longer supported
+* removed `microinverter_type` parameter from `HoymilesModbusTCP`
+* data structures `MISeriesMicroinverterData` and `HMSeriesMicroinverterData` replaced by `InverterData`
+* renamed `PlantData.microinverter_data` to `PlantData.inverters`
+* renamed `HoymilesModbusTCP.microinverter_data` to `HoymilesModbusTCP.inverters`
+
+
 ## [0.7.0] (2024-08-12)
 
 * add support for Python 3.12
