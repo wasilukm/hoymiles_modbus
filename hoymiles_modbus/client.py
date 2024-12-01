@@ -1,44 +1,12 @@
 """Hoymiles Modbus client."""
 
-from dataclasses import asdict, dataclass
+from typing import TYPE_CHECKING
 
-from pymodbus.client import ModbusTcpClient
-from pymodbus.framer.old_framer_socket import ModbusSocketFramer
+from ._modbus_tcp_client import create_modbus_tcp_client
+from .datatypes import CommunicationParams, InverterData, PlantData, _serial_number_t
 
-from .datatypes import InverterData, PlantData, _serial_number_t
-
-
-@dataclass
-class CommunicationParams:
-    """Low level pymodbus communication parameters."""
-
-    timeout: float = 3
-    """Timeout for a connection request, in seconds."""
-    retries: int = 3
-    """Max number of retries per request."""
-    reconnect_delay: float = 0
-    """Minimum delay in seconds.milliseconds before reconnecting.
-    Doubles automatically with each unsuccessful connect, from
-    **reconnect_delay** to **reconnect_delay_max**.
-
-    Default is 0 which means that reconnecting is disabled."""
-    reconnect_delay_max: float = 300
-    """Maximum delay in seconds.milliseconds before reconnecting."""
-
-
-class _CustomSocketFramer(ModbusSocketFramer):
-    """Custom framer for fixing data length in received modbus packets."""
-
-    @staticmethod
-    def _data_length_fixer(packet):  # pragma: no cover
-        fixed_packet = list(packet)
-        if len(packet) > 9:
-            fixed_packet[8] = len(fixed_packet[9:])
-        return bytes(fixed_packet)
-
-    def processIncomingPacket(self, data, callback, unit, **kwargs):
-        fixed_data = self._data_length_fixer(data)
-        super().processIncomingPacket(fixed_data, callback, unit, **kwargs)
+if TYPE_CHECKING:  # pragma: no cover
+    from pymodbus.client import ModbusTcpClient
 
 
 class HoymilesModbusTCP:
@@ -65,28 +33,18 @@ class HoymilesModbusTCP:
         self._port: int = port
         self._dtu_serial_number: str = ''
         self._unit_id = unit_id
-        self._comm_params: CommunicationParams = CommunicationParams()
+        self._comm_params: 'CommunicationParams' = CommunicationParams()
 
     @property
     def comm_params(self) -> CommunicationParams:
         """Low level communication parameters."""
         return self._comm_params
 
-    def _get_client(self) -> ModbusTcpClient:
-        client = ModbusTcpClient(
-            host=self._host,
-            port=self._port,
-            **asdict(self.comm_params),
-        )
-
-        # reinitialize framer with custom framer, use already existing decoder
-        # custom framer is for fixing data length in received frames
-        # (some DTUs send corrupted packets)
-        client.framer = _CustomSocketFramer(client.framer.decoder, client)
-        return client
+    def _get_client(self) -> "ModbusTcpClient":
+        return create_modbus_tcp_client(self._host, self._port, self.comm_params)
 
     @staticmethod
-    def _read_registers(client: ModbusTcpClient, start_address, count, unit_id):
+    def _read_registers(client: 'ModbusTcpClient', start_address: int, count: int, unit_id: int):
         result = client.read_holding_registers(start_address, count, slave=unit_id)
         if result.isError():
             raise RuntimeError(f'Received error response {result}')

@@ -6,7 +6,8 @@ from unittest import mock
 import pytest
 from plum.exceptions import UnpackError
 
-from hoymiles_modbus.client import HoymilesModbusTCP, ModbusTcpClient
+from hoymiles_modbus._modbus_tcp_client import ModbusTcpClient
+from hoymiles_modbus.client import HoymilesModbusTCP
 from hoymiles_modbus.datatypes import InverterData
 
 example_mi_series_raw_responses = [
