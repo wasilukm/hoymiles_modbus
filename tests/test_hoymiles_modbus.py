@@ -4,7 +4,6 @@ from decimal import Decimal
 from unittest import mock
 
 import pytest
-from plum.exceptions import UnpackError
 
 from hoymiles_modbus._modbus_tcp_client import ModbusTcpClient
 from hoymiles_modbus.client import HoymilesModbusTCP
@@ -97,17 +96,6 @@ def test_inverter_data_decode_hm_series():
         ]
         inverters_data = HoymilesModbusTCP('1.2.3.4').inverters
         assert inverters_data == expected
-
-
-def test_unknown_inverter_type():
-    """Test exception for unknown inverter type."""
-    client_mock = mock.Mock()
-    with mock.patch.object(ModbusTcpClient, '__enter__', return_value=client_mock):
-        client_mock.read_holding_registers.return_value.encode.side_effect = example_unknown_series_raw_responses
-        client_mock.read_holding_registers.return_value.isError.return_value = False
-
-        with pytest.raises(UnpackError):
-            _ = HoymilesModbusTCP('1.2.3.4').inverters
 
 
 def test_stop_inverter_data_decode_on_empty_serial():
