@@ -57,16 +57,9 @@ class _PVCurrentType(Enum):
 
 
 def _pv_current_type(serial: str) -> DecimalX:
+    current_type = _PVCurrentType.HM.value
     if serial.startswith('10'):
         current_type = _PVCurrentType.MI.value
-    elif serial.startswith('11'):
-        current_type = _PVCurrentType.HM.value
-    elif serial == '000000000000':
-        # all zero serial number means empty inverter data
-        # in this case type of current value is not important
-        current_type = _PVCurrentType.MI.value
-    else:
-        raise ValueError(f"Couldn't detect inverter type for serial {serial}. Please report an issue.")
     return current_type
 
 
