@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.9.0] (2025-01-19)
+
+* add support for Python 3.13
+* Change logic of inverter type detection.
+  By default, all inverters are treated as HM series. Only inverters with serial numbers starting with "10" are treated as MI series.
+  This should cover more inverters without updating the library for every new inverter model.
+  Note: the knowledge of inverter type is needed for correct decoding pv_current.
+
 ## [0.8.0] (2024-12-01)
 
 Features:
