@@ -2,7 +2,7 @@ from dataclasses import asdict
 from typing import TYPE_CHECKING
 
 from pymodbus.client import ModbusTcpClient
-from pymodbus.pdu.register_read_message import ReadHoldingRegistersResponse
+from pymodbus.pdu.register_message import ReadHoldingRegistersResponse
 
 if TYPE_CHECKING:  # pragma: no cover
     from .datatypes import CommunicationParams
