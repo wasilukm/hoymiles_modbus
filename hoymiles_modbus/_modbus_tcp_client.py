@@ -2,23 +2,19 @@ from dataclasses import asdict
 from typing import TYPE_CHECKING
 
 from pymodbus.client import ModbusTcpClient
-from pymodbus.pdu.register_read_message import ReadHoldingRegistersResponse
 
 if TYPE_CHECKING:  # pragma: no cover
     from .datatypes import CommunicationParams
 
+SIZE_BYTE_POSITION = 8
 
-class _CustomReadHoldingRegistersResponse(ReadHoldingRegistersResponse):
 
-    @staticmethod
-    def _data_size_fixer(packet: bytes):
-        fixed_packet = list(packet)
-        fixed_packet[0] = len(fixed_packet[1:])  # calculate new data size
+def _data_size_fixer(sending: bool, data: bytes) -> bytes:
+    if not sending:
+        fixed_packet = list(data)
+        fixed_packet[SIZE_BYTE_POSITION] = len(fixed_packet[SIZE_BYTE_POSITION + 1 :])  # calculate new data size
         return bytes(fixed_packet)
-
-    def decode(self, data: bytes):
-        fixed = self._data_size_fixer(data)
-        return super().decode(fixed)
+    return data
 
 
 def create_modbus_tcp_client(host: str, port: int, comm_params: 'CommunicationParams') -> ModbusTcpClient:
@@ -33,11 +29,8 @@ def create_modbus_tcp_client(host: str, port: int, comm_params: 'CommunicationPa
     client = ModbusTcpClient(
         host=host,
         port=port,
+        trace_packet=_data_size_fixer,
         **asdict(comm_params),
     )
-
-    # Register custom PDU class which fixes data size in a response from DTU
-    # (some DTUs send responses with wrong data size byte)
-    client.framer.decoder.register(_CustomReadHoldingRegistersResponse)
 
     return client
