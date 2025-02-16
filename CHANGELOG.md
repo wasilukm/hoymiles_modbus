@@ -1,5 +1,9 @@
 # Changelog
 
+## [0.9.1] (2025-02-16)
+
+* bump pymodbus to 3.8
+
 ## [0.9.0] (2025-01-19)
 
 * add support for Python 3.13
