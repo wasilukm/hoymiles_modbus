@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.10.0] (2025-09-01)
+
+* bump pymodbus to 3.11
+* drop support for Python 3.9
+
 ## [0.9.1] (2025-02-16)
 
 * bump pymodbus to 3.8
